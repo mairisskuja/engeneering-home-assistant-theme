@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.10 (2026-09-26)
+
+- Lights dashboard config: `temperature_exclude: [sensor.smart_kettle_55b1_temperature]`.
+- Reference instance: five temperature sensors renamed to Latvian room names in the HA entity registry (see HANDOVER §7).
+
 ## 0.3.9 (2026-09-26)
 
 - Console card 0.9.0: new `hide_unavailable` option. The Temperature panel lists only sensors with a numeric reading, and SYSTEM-01 replaces the per-item N/A list with "Lights online x/y" and "Temp sensors online x/y"; the verdict still counts faults. It's enabled on the Lights dashboard. Nothing is deleted from HA, and hidden items reappear when they come back online.
