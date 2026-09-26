@@ -29,10 +29,10 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.17.3";
+const VERSION = "0.17.4";
 
 const DEFAULT_SCENES = [
-  { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
+  { name: "ON", color: "cream", brightness: 100, kelvin: 3500 },
   { name: "READ", color: "yellow", brightness: 90, kelvin: 3500 },
   { name: "EVENING", color: "orange", brightness: 45, kelvin: 2700 },
   { name: "NIGHT", color: "brown", brightness: 8, kelvin: 2200 },

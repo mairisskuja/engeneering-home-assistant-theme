@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.29 (2026-09-27)
+
+- Console card 0.17.4: the default ON scene uses 3500 K (was 4000 K), on both the Scenes strip and the area keys.
+
 ## 0.3.28 (2026-09-27)
 
 - Reference instance: Koridors' six ceiling lights are combined in a Home Assistant light group, `light.griesti`, with its members hidden. The console shows a single "Griesti" knob, and the area toggle and scene keys drive all six through the group. No card change was needed: the card already skips hidden entities. Tip for other rooms: create a light group helper with "Hide members" enabled and assign it to the area.

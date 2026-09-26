@@ -49,7 +49,7 @@ co2_exclude: [sensor.x]        # optional
 humidity: true                 # optional; humidity next to each temperature (default on)
 humidity_map: {sensor.outdoor_temp: weather.home}  # optional; pair a temperature with a humidity sensor or weather entity
 scenes:                        # optional; colours: cream, yellow, orange, brown, dark
-  - { name: "ON", color: cream, brightness: 100, kelvin: 4000 }
+  - { name: "ON", color: cream, brightness: 100, kelvin: 3500 }
   - { name: "OFF", color: dark, brightness: 0 }
 ```
 
