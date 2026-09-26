@@ -2,6 +2,8 @@
 
 An industrial control-panel theme for Home Assistant: graphite or light-grey panels, square edges, a safety-orange accent and explicit status colours. Its typography is inspired by [teenage.engineering](https://teenage.engineering/). It has dark and light modes, both checked against WCAG 2.2 AA.
 
+![Engineering Theme lighting console in light mode: floor tabs, scenes strip, LCD status with dot matrix, temperature and humidity panel, and per-area brightness knobs](docs/images/console-light.png)
+
 ## Highlights
 
 - **Control-panel look**: flat panels with 1px edges and 2–4px corners, no drop shadows, and a graphite neutral scale shared by menus, dialogs and switches.
