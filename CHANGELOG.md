@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.22 (2026-09-26)
+
+- Console card 0.16.0: the LCD title line is now `STATUS: … // LINK OK · n ON`, with no LED and no time. The status is the same verdict as SYSTEM-01 ("NOMINAL" when all lights are online, otherwise the fault count). The line wraps when it's too long.
+
 ## 0.3.21 (2026-09-26)
 
 - Console card 0.15.0: the LCD title line is now the time plus the link status (LED, "LINK OK · n ON"), moved there from the title bar. The zone name was removed from the LCD and stays in the title bar.

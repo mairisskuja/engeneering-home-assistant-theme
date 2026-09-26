@@ -29,7 +29,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.15.0";
+const VERSION = "0.16.0";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -142,8 +142,8 @@ const STYLE = `
     display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: center; justify-content: space-between;
     color: var(--lcd-soft); font: 18px/1.5 var(--fm); letter-spacing: .04em; min-height: 128px;
   }
-  .lcd .l1 { color: var(--lcd-hi); font-size: 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; }
-  .lcdlink { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; color: var(--lcd-soft); }
+  .lcd .l1 { color: var(--lcd-hi); font-size: 17px; line-height: 1.4; display: flex; flex-wrap: wrap; gap: 0 .6em; text-transform: uppercase; }
+  .lcdlink { color: var(--lcd-soft); }
   .dots { --dot: 18px; display: grid; grid-template-columns: repeat(var(--cols, 8), var(--dot)); gap: 9px; flex: none; }
   .dot { width: var(--dot); height: var(--dot); border-radius: 50%; background: var(--lcd-dim); }
   .dot.on { background: var(--lcd-hi); box-shadow: 0 0 7px var(--lcd-hi); }
@@ -514,7 +514,7 @@ class EngineeringConsoleCard extends HTMLElement {
             <section class="module summary" aria-label="Summary">
               <div class="mhead"><h2 class="mtitle">${esc(scope)}</h2><span class="mmeta">Lights</span></div>
               <div class="lcd" role="img" data-lcdlabel>
-                <div class="l1"><span data-l1></span><span class="lcdlink"><span class="led" data-linkled></span><span data-linktext></span></span></div>
+                <div class="l1"><span data-lcdstatus></span><span class="lcdlink">// <span data-linktext></span></span></div>
                 <div class="dots" data-dots aria-hidden="true"></div>
               </div>
               ${model.readings.map((r) => `
@@ -713,10 +713,11 @@ class EngineeringConsoleCard extends HTMLElement {
         ? faults.map((l) => `<li><span class="led bad"></span>${esc(l.name)} · N/A</li>`).join("")
         : `<li><span class="led ok"></span>All lights online</li>`;
     }
-    set("[data-verdict]", faults.length ? `Status: ${faults.length} fault${faults.length > 1 ? "s" : ""}` : "Status: nominal");
+    const verdict = faults.length ? `Status: ${faults.length} fault${faults.length > 1 ? "s" : ""}` : "Status: nominal";
+    set("[data-verdict]", verdict);
+    set("[data-lcdstatus]", verdict);
     const allOn = model.all.filter((l) => this._state(l.id).on).length;
     set("[data-linktext]", `LINK OK · ${allOn} ON`);
-    root.querySelector("[data-linkled]")?.classList.add("ok");
     this._tick();
   }
 
@@ -828,8 +829,6 @@ class EngineeringConsoleCard extends HTMLElement {
     const date = now.toLocaleDateString(lang, { weekday: "short", day: "numeric", month: "short" });
     const time = now.toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit" });
     el.textContent = `${date} · ${time}`.toUpperCase();
-    const l1 = this.shadowRoot.querySelector("[data-l1]");
-    if (l1) l1.textContent = time;
   }
 
   // ----- interaction ------------------------------------------------------
