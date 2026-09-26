@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.17 (2026-09-26)
+
+- Console card 0.13.0:
+  - Humidity moved out of the ALL module into a unified **Temperature and Humidity** panel. Each row shows the temperature and the humidity from the same device's humidity sensor; a new `humidity_map` option pairs a temperature with any humidity sensor or a `weather.*` entity (its `humidity` attribute). `humidity: false` hides the column.
+  - Module meta labels no longer wrap.
+- Lights dashboard: "Temperatūra ārā" is paired with `weather.forecast_home` (met.no); the `humidity_exclude` entry was removed.
+
 ## 0.3.16 (2026-09-26)
 
 - Console card 0.12.0:

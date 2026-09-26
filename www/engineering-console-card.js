@@ -15,8 +15,10 @@
 //   temperatures: true               # optional; temperature sensor panel
 //   temperature_exclude: [sensor.x]  # optional
 //   temperature_order: [sensor.a, "..."]  # optional; entity ids or names, like area_order
-//   co2: true / humidity: true       # optional; readings under the LCD
-//   co2_exclude / humidity_exclude: [sensor.x]  # optional
+//   co2: true                        # optional; CO2 readings under the LCD
+//   co2_exclude: [sensor.x]          # optional
+//   humidity: true                   # optional; humidity next to each temperature
+//   humidity_map: {sensor.temp: sensor.hum | weather.x}  # optional pairing overrides
 //   hide_unavailable: true           # optional; drop N/A rows from System-01
 //                                    # and the temperature panel (counts stay)
 //   scenes:                          # optional, replaces the defaults;
@@ -27,7 +29,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.12.0";
+const VERSION = "0.13.0";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -50,13 +52,6 @@ const READINGS = [
     format: (v, unit) => `${Math.round(v)} ${unit || "ppm"}`,
     level: (v) => (v < 800 ? "ok" : v <= 1200 ? "warn" : "bad"),
     bar: (v) => (v - 400) / 1600,
-  },
-  {
-    key: "humidity", deviceClass: "humidity", label: "Humidity", spoken: "humidity",
-    strip: /\s*(current\s+)?(humidity|mitrums)(\s+sensor)?\s*$/i,
-    format: (v, unit) => `${Math.round(v)}${unit || "%"}`,
-    level: (v) => (v >= 40 && v <= 60 ? "ok" : v >= 30 && v <= 70 ? "warn" : "bad"),
-    bar: (v) => v / 100,
   },
 ];
 const LEVEL_WORD = { ok: "good", warn: "moderate", bad: "poor" };
@@ -136,7 +131,7 @@ const STYLE = `
   .module::before { content: ""; position: absolute; left: 5px; top: 5px; width: 7px; height: 7px; background: var(--ink); }
   .mhead { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
   .mtitle { font: 600 19px/1.1 var(--fc); text-transform: uppercase; letter-spacing: .03em; margin: 0; }
-  .mmeta { font: 12px var(--fm); color: var(--soft); margin-left: auto; text-transform: uppercase; }
+  .mmeta { font: 12px var(--fm); color: var(--soft); margin-left: auto; text-transform: uppercase; white-space: nowrap; }
   .wide { grid-column: 1 / -1; }
 
   /* LCD */
@@ -226,6 +221,9 @@ const STYLE = `
   .tbar { grid-column: 2 / 4; height: 4px; background: var(--face-lo); border-radius: 2px; overflow: hidden; }
   .tbar i { display: block; height: 100%; width: 0; background: var(--pointer); transition: width .4s; }
   .trow.na .tval { color: var(--soft); }
+  .trow.th { grid-template-columns: 10px 1fr auto 44px; }
+  .trow.th .tbar { grid-column: 2 / 5; }
+  .hval { font: 600 17px/1 var(--fc); color: var(--soft); text-align: right; font-variant-numeric: tabular-nums; }
   .reading { margin-top: 14px; }
   .sublbl { font: 11px var(--fm); color: var(--soft); letter-spacing: .08em; margin-bottom: 4px; text-transform: uppercase; }
   .led.warn { background: var(--warn); box-shadow: 0 0 6px var(--warn); }
@@ -266,7 +264,7 @@ class EngineeringConsoleCard extends HTMLElement {
     // Re-render when anything structural changes, including renames.
     const key = JSON.stringify([
       this._title(), this._tab,
-      model.temps.map((t) => [t.id, t.name]),
+      model.temps.map((t) => [t.id, t.name, t.hum]),
       model.readings.map((r) => [r.key, r.items.map((t) => [t.id, t.name])]),
       model.tabs.map((t) => [t.id, t.name]),
       model.areas.map((a) => [a.id, a.name, a.lights.map((l) => [l.id, l.name, l.kind])]),
@@ -378,8 +376,33 @@ class EngineeringConsoleCard extends HTMLElement {
         name: (st.attributes.friendly_name || st.entity_id)
           .replace(/\s*(current\s+)?(temperature|temperatura)(\s+sensor)?\s*$/i, "")
           .trim() || st.attributes.friendly_name,
+        hum: this._humidityFor(st.entity_id),
       }))
       .sort((a, b) => this._orderRank(a) - this._orderRank(b) || a.name.localeCompare(b.name));
+  }
+
+  // Humidity source for a temperature sensor: an explicit humidity_map entry
+  // (a sensor or a weather entity), else the humidity sensor on the same device.
+  _humidityFor(tempId) {
+    if (this._config.humidity === false) return null;
+    const h = this._hass;
+    const mapped = this._config.humidity_map?.[tempId];
+    if (mapped) return mapped;
+    const device = h.entities?.[tempId]?.device_id;
+    if (!device) return null;
+    const exclude = new Set(this._config.humidity_exclude || []);
+    const hum = Object.values(h.entities).find(
+      (e) => e.device_id === device && !exclude.has(e.entity_id) &&
+        h.states[e.entity_id]?.attributes.device_class === "humidity"
+    );
+    return hum?.entity_id || null;
+  }
+
+  _humidityValue(id) {
+    const st = this._hass.states[id];
+    if (!st) return null;
+    const v = parseFloat(id.startsWith("weather.") ? st.attributes.humidity : st.state);
+    return Number.isFinite(v) ? v : null;
   }
 
   _readings(def) {
@@ -512,14 +535,15 @@ class EngineeringConsoleCard extends HTMLElement {
               <div class="hint">Drag or scroll a knob to dim · tap to toggle</div>
             </section>
             ${model.temps.length ? `
-            <section class="module" aria-label="Temperature">
-              <div class="mhead"><h2 class="mtitle">Temperature</h2><span class="mmeta" data-tempmeta></span></div>
+            <section class="module" aria-label="Temperature and humidity">
+              <div class="mhead"><h2 class="mtitle">Temperature and Humidity</h2><span class="mmeta" data-tempmeta></span></div>
               <ul class="temps">
                 ${model.temps.map((t) => `
-                  <li><button class="trow" data-temp="${esc(t.id)}">
+                  <li><button class="trow th" data-temp="${esc(t.id)}" ${t.hum ? `data-hum="${esc(t.hum)}"` : ""}>
                     <span class="led"></span>
                     <span class="tname">${esc(t.name)}</span>
                     <span class="tval">—</span>
+                    <span class="hval">${t.hum ? "—" : ""}</span>
                     <span class="tbar" aria-hidden="true"><i></i></span>
                   </button></li>`).join("")}
               </ul>
@@ -656,7 +680,13 @@ class EngineeringConsoleCard extends HTMLElement {
       row.querySelector(".led").className = `led ${ok ? "ok" : "bad"}`;
       const c = unit === "°F" ? (v - 32) / 1.8 : v;
       row.querySelector(".tbar i").style.width = ok ? `${Math.max(0, Math.min(100, ((c + 10) / 50) * 100))}%` : "0";
-      row.setAttribute("aria-label", `${row.querySelector(".tname").textContent}: ${ok ? txt : "unavailable"}`);
+      let spoken = ok ? txt : "unavailable";
+      if (row.dataset.hum) {
+        const hv = this._humidityValue(row.dataset.hum);
+        row.querySelector(".hval").textContent = hv === null ? "—" : `${Math.round(hv)}%`;
+        spoken += hv === null ? ", humidity unavailable" : `, humidity ${Math.round(hv)}%`;
+      }
+      row.setAttribute("aria-label", `${row.querySelector(".tname").textContent}: ${spoken}`);
     }
     set("[data-tempmeta]", `${tOk}/${model.temps.length} online`);
 

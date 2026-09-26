@@ -30,9 +30,9 @@
             "...",
             "sensor.alpstuga_2_master_bedroo_temperature_sensor"
           ],
-          "humidity_exclude": [
-            "sensor.alpstuga_air_quality_moni_humidity_sensor"
-          ]
+          "humidity_map": {
+            "sensor.iconic_home_ara_temperatura": "weather.forecast_home"
+          }
         }
       ]
     }
