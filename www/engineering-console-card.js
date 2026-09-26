@@ -29,7 +29,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.14.0";
+const VERSION = "0.15.0";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -125,7 +125,6 @@ const STYLE = `
   .led.bad { background: var(--bad); box-shadow: 0 0 6px var(--bad); }
   .status { text-align: right; }
   .clock { font: 600 20px/1.1 var(--fc); letter-spacing: .04em; }
-  .link { font: 12px var(--fm); color: var(--soft); display: flex; gap: 6px; align-items: center; justify-content: flex-end; }
 
   /* Module grid */
   .grid { display: grid; gap: 1px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); background: var(--grid); }
@@ -143,7 +142,8 @@ const STYLE = `
     display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: center; justify-content: space-between;
     color: var(--lcd-soft); font: 18px/1.5 var(--fm); letter-spacing: .04em; min-height: 128px;
   }
-  .lcd .l1 { color: var(--lcd-hi); font-size: 22px; }
+  .lcd .l1 { color: var(--lcd-hi); font-size: 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; }
+  .lcdlink { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; color: var(--lcd-soft); }
   .dots { --dot: 18px; display: grid; grid-template-columns: repeat(var(--cols, 8), var(--dot)); gap: 9px; flex: none; }
   .dot { width: var(--dot); height: var(--dot); border-radius: 50%; background: var(--lcd-dim); }
   .dot.on { background: var(--lcd-hi); box-shadow: 0 0 7px var(--lcd-hi); }
@@ -508,14 +508,13 @@ class EngineeringConsoleCard extends HTMLElement {
             <div class="brand">${esc(this._title())}</div>
             <div class="status">
               <div class="clock" data-clock></div>
-              <div class="link"><span class="led" data-linkled></span><span data-linktext></span></div>
             </div>
           </div>
           <div class="grid">
             <section class="module summary" aria-label="Summary">
               <div class="mhead"><h2 class="mtitle">${esc(scope)}</h2><span class="mmeta">Lights</span></div>
               <div class="lcd" role="img" data-lcdlabel>
-                <div class="l1" data-l1></div>
+                <div class="l1"><span data-l1></span><span class="lcdlink"><span class="led" data-linkled></span><span data-linktext></span></span></div>
                 <div class="dots" data-dots aria-hidden="true"></div>
               </div>
               ${model.readings.map((r) => `
@@ -830,7 +829,7 @@ class EngineeringConsoleCard extends HTMLElement {
     const time = now.toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit" });
     el.textContent = `${date} · ${time}`.toUpperCase();
     const l1 = this.shadowRoot.querySelector("[data-l1]");
-    if (l1) l1.textContent = `${this._title().toUpperCase()} // ${time}`;
+    if (l1) l1.textContent = time;
   }
 
   // ----- interaction ------------------------------------------------------
