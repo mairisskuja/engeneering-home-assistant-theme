@@ -14,6 +14,7 @@
 //                                    # floor/name order in between
 //   temperatures: true               # optional; temperature sensor panel
 //   temperature_exclude: [sensor.x]  # optional
+//   temperature_order: [sensor.a, "..."]  # optional; entity ids or names, like area_order
 //   hide_unavailable: true           # optional; drop N/A rows from System-01
 //                                    # and the temperature panel (counts stay)
 //   scenes:                          # optional, replaces the defaults;
@@ -24,7 +25,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.9.0";
+const VERSION = "0.10.0";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -354,7 +355,14 @@ class EngineeringConsoleCard extends HTMLElement {
           .replace(/\s*(current\s+)?(temperature|temperatura)(\s+sensor)?\s*$/i, "")
           .trim() || st.attributes.friendly_name,
       }))
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => this._orderRank(a) - this._orderRank(b) || a.name.localeCompare(b.name));
+  }
+
+  _orderRank(t) {
+    const order = (this._config.temperature_order || []).map((x) => String(x).toLowerCase());
+    const rest = order.indexOf("...") < 0 ? order.length : order.indexOf("...");
+    const i = order.findIndex((x) => x === t.id.toLowerCase() || x === t.name.toLowerCase());
+    return i < 0 ? rest : i;
   }
 
   _title() {

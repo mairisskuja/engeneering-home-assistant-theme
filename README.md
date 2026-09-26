@@ -41,6 +41,7 @@ area_order: [koridors, "...", ieeja]  # optional; before "..." = first, after = 
 temperatures: true             # optional; temperature panel (default on)
 temperature_exclude: [sensor.smart_kettle_temperature]  # optional
 hide_unavailable: true         # optional; drop N/A rows from SYSTEM-01 and Temperature
+temperature_order: [sensor.a, "..."]  # optional; like area_order, for temperature rows
 scenes:                        # optional; colours: cream, yellow, orange, brown, dark
   - { name: "ON", color: cream, brightness: 100, kelvin: 4000 }
   - { name: "OFF", color: dark, brightness: 0 }

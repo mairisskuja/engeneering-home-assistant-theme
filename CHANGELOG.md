@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.11 (2026-09-26)
+
+- Console card 0.10.0: new `temperature_order` option (entity ids or names, with the `"..."` placeholder, like `area_order`); unlisted sensors are sorted by name.
+- Lights dashboard: explicit temperature order, with "Tado dzīvojamā istaba" right after "Dzīvojamā istaba".
+
 ## 0.3.10 (2026-09-26)
 
 - Lights dashboard config: `temperature_exclude: [sensor.smart_kettle_55b1_temperature]`.
