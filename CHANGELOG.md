@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.15 (2026-09-26)
+
+- Console card 0.11.0: CO₂ block under the LCD in the ALL module. It auto-discovers `device_class: carbon_dioxide` sensors, colours the LED by level (green < 800, amber 800–1200, red > 1200 ppm), shows a bar and the value, and opens more-info on click. New options `co2` and `co2_exclude`; `hide_unavailable` also applies. New mode-aware `--warn` colour (3.62:1 light, 10.12:1 dark). Verified with simulated sensors in the browser.
+- Reference instance: **no CO₂ entities exist yet.** The IKEA ALPSTUGA monitors are bridged over HomeKit (DIRIGERA), which exposes only temperature, humidity, AQI and PM2.5. Adding the hub through HA's Matter integration should expose CO₂, and the block will then appear automatically.
+
 ## 0.3.14 (2026-09-26)
 
 - Console card 0.10.3: the LCD shows only "<ZONE> // <time>" and the animated dot matrix. The ON/OFF and N/A/AVG text lines were removed; the counts remain in the LCD's accessible label for screen readers.

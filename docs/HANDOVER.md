@@ -96,6 +96,7 @@ Backups made by `deploy.sh` are stored in `/config/backups_manual/engineering_th
 
 ## 6. Open items and next steps
 
+0. **CO₂ data:** the ALPSTUGA monitors only reach HA over HomeKit (no CO₂). Pair the IKEA DIRIGERA hub with HA's Matter integration; the console's CO₂ block will then populate itself.
 0. **Console card, next steps:**
    - Exercise it against real lights; so far only intercepted calls have been verified.
    - Test on the wall tablet and on a phone. The layout switches to one column below 600px.

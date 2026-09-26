@@ -27,6 +27,7 @@ An industrial control-panel theme for Home Assistant: graphite or light-grey pan
 - **An on/off toggle per area**, for all of that area's available lights.
 - **A title from a zone**: the header and LCD show the name of `zone` (default `zone.home`, i.e. your home location's name), or a fixed `title` if set.
 - **Blinkenlights**: every 30 seconds, and on every scene change, the LCD dot matrix plays an early-computer front-panel sequence (column sweep with trail, random flicker, then each dot settles to its real state; about 3 s). It's skipped in hidden tabs and when the device prefers reduced motion.
+- **CO₂ readings** in the ALL module, below the LCD: every `sensor.*` with `device_class: carbon_dioxide`, each with an LED (green < 800 ppm, amber 800–1200, red > 1200), the ppm value and a 400–2000 ppm bar. The section is hidden when no CO₂ sensor exists.
 - **A temperature panel**, right after Scene selection, listing every `sensor.*` with `device_class: temperature`. Each row has a status LED, a trimmed name, the reading and a −10…40 °C gauge bar; unavailable sensors show N/A. Clicking a row opens HA's more-info dialog.
 - **An LCD summary** for the current tab: the zone name and time, plus one dot per light (counts are announced to screen readers), plus a **SYSTEM** fault list across all lights. With `hide_unavailable`, SYSTEM shows online counts (lights, temperature sensors) instead of listing each N/A item, and the Temperature panel lists only sensors with a reading.
 - **Scene tags** (ON, READ, EVENING, NIGHT, OFF) that apply to the current tab, plus a row of **small scene keys in every area module** that apply the same scenes to just that area. Both send colour temperature only to lights that support it, and an area's keys are disabled when none of its lights are available.
@@ -42,6 +43,8 @@ temperatures: true             # optional; temperature panel (default on)
 temperature_exclude: [sensor.smart_kettle_temperature]  # optional
 hide_unavailable: true         # optional; drop N/A rows from SYSTEM-01 and Temperature
 temperature_order: [sensor.a, "..."]  # optional; like area_order, for temperature rows
+co2: true                      # optional; CO2 readings under the LCD (default on)
+co2_exclude: [sensor.x]        # optional
 scenes:                        # optional; colours: cream, yellow, orange, brown, dark
   - { name: "ON", color: cream, brightness: 100, kelvin: 4000 }
   - { name: "OFF", color: dark, brightness: 0 }

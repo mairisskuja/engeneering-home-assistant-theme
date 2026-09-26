@@ -15,6 +15,8 @@
 //   temperatures: true               # optional; temperature sensor panel
 //   temperature_exclude: [sensor.x]  # optional
 //   temperature_order: [sensor.a, "..."]  # optional; entity ids or names, like area_order
+//   co2: true                        # optional; CO2 readings under the LCD
+//   co2_exclude: [sensor.x]          # optional
 //   hide_unavailable: true           # optional; drop N/A rows from System-01
 //                                    # and the temperature panel (counts stay)
 //   scenes:                          # optional, replaces the defaults;
@@ -25,7 +27,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.10.3";
+const VERSION = "0.11.0";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -59,7 +61,7 @@ const STYLE = `
     --rule: #1f1f1d; --ink: #1d1d1b; --soft: #55534e; --tick-off: #6f6c65;
     --orange: #ff5a1c; --pointer: #c73f0c; --pill-on: #e2480e;
     --lcd: #1c1b19; --lcd-hi: #ff6b2b; --lcd-soft: #e0a070; --lcd-dim: #3a2a20;
-    --ok: #3f7a33; --bad: #c42b2b; --tab-dark: #2c2e33;
+    --ok: #3f7a33; --warn: #9a6a00; --bad: #c42b2b; --tab-dark: #2c2e33;
     --tag-cream: #e9e6de; --tag-yellow: #ecc14a; --tag-orange: #ff5a1c;
     --tag-brown: #9a4f17; --tag-dark: #2c2e33;
     --fc: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
@@ -72,7 +74,7 @@ const STYLE = `
     --rule: #4a5057; --ink: #eceff2; --soft: #a9b0b8; --tick-off: #6b737b;
     --orange: #ff7a1a; --pointer: #ff7a1a; --pill-on: #ff7a1a;
     --lcd: #0f1113; --lcd-hi: #ff7a1a; --lcd-soft: #e8a36b; --lcd-dim: #2e2014;
-    --ok: #3ecf6e; --bad: #ff6b6b; --tab-dark: #0f1113;
+    --ok: #3ecf6e; --warn: #ffc53d; --bad: #ff6b6b; --tab-dark: #0f1113;
     --tag-cream: #d9d6cf;
   }
   * { box-sizing: border-box; }
@@ -212,6 +214,9 @@ const STYLE = `
   .tbar { grid-column: 2 / 4; height: 4px; background: var(--face-lo); border-radius: 2px; overflow: hidden; }
   .tbar i { display: block; height: 100%; width: 0; background: var(--pointer); transition: width .4s; }
   .trow.na .tval { color: var(--soft); }
+  .co2 { margin-top: 14px; }
+  .sublbl { font: 11px var(--fm); color: var(--soft); letter-spacing: .08em; margin-bottom: 4px; }
+  .led.warn { background: var(--warn); box-shadow: 0 0 6px var(--warn); }
 
   /* System */
   .leds { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px;
@@ -250,6 +255,7 @@ class EngineeringConsoleCard extends HTMLElement {
     const key = JSON.stringify([
       this._title(), this._tab,
       model.temps.map((t) => [t.id, t.name]),
+      model.co2.map((t) => [t.id, t.name]),
       model.tabs.map((t) => [t.id, t.name]),
       model.areas.map((a) => [a.id, a.name, a.lights.map((l) => [l.id, l.name, l.kind])]),
     ]);
@@ -343,7 +349,7 @@ class EngineeringConsoleCard extends HTMLElement {
     const areas = areaList.filter((a) =>
       this._tab === "all" ? true : this._tab === "other" ? !a.floor : a.floor === this._tab
     );
-    return { tabs, areas, all: lights, temps: this._temps() };
+    return { tabs, areas, all: lights, temps: this._temps(), co2: this._co2() };
   }
 
   _temps(includeUnavailable = !this._config.hide_unavailable) {
@@ -361,6 +367,23 @@ class EngineeringConsoleCard extends HTMLElement {
           .trim() || st.attributes.friendly_name,
       }))
       .sort((a, b) => this._orderRank(a) - this._orderRank(b) || a.name.localeCompare(b.name));
+  }
+
+  _co2() {
+    if (this._config.co2 === false) return [];
+    const h = this._hass;
+    const exclude = new Set(this._config.co2_exclude || []);
+    return Object.values(h.states)
+      .filter((st) => st.entity_id.startsWith("sensor.") && st.attributes.device_class === "carbon_dioxide")
+      .filter((st) => !exclude.has(st.entity_id) && !h.entities?.[st.entity_id]?.hidden)
+      .filter((st) => !this._config.hide_unavailable || Number.isFinite(parseFloat(st.state)))
+      .map((st) => ({
+        id: st.entity_id,
+        name: (st.attributes.friendly_name || st.entity_id)
+          .replace(/\s*(carbon\s+dioxide|co2|co₂)(\s+sensor)?\s*$/i, "")
+          .trim() || st.attributes.friendly_name,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }
 
   _orderRank(t) {
@@ -437,6 +460,19 @@ class EngineeringConsoleCard extends HTMLElement {
                 <div class="l1" data-l1></div>
                 <div class="dots" data-dots aria-hidden="true"></div>
               </div>
+              ${model.co2.length ? `
+              <div class="co2">
+                <div class="sublbl">CO₂</div>
+                <ul class="temps">
+                  ${model.co2.map((t) => `
+                    <li><button class="trow" data-co2="${esc(t.id)}">
+                      <span class="led"></span>
+                      <span class="tname">${esc(t.name)}</span>
+                      <span class="tval">—</span>
+                      <span class="tbar" aria-hidden="true"><i></i></span>
+                    </button></li>`).join("")}
+                </ul>
+              </div>` : ""}
             </section>
             <section class="module scenes" aria-label="Scenes">
               <div class="mhead"><h2 class="mtitle">Scene selection</h2><span class="mmeta">${esc(scope)}</span></div>
@@ -562,6 +598,21 @@ class EngineeringConsoleCard extends HTMLElement {
     if (lcd) lcd.setAttribute("aria-label", `${on.length} on, ${this._lcd.off} off, ${na} unavailable, average brightness ${avg}%`);
     this._dotStates = sts;
     if (!this._animating) this._paintDots();
+
+    // CO2: green < 800 ppm, amber 800–1200, red > 1200; bar spans 400–2000 ppm
+    for (const row of root.querySelectorAll("[data-co2]")) {
+      const st = this._hass.states[row.dataset.co2];
+      const v = parseFloat(st?.state);
+      const ok = st && Number.isFinite(v);
+      const txt = ok ? `${Math.round(v)} ${st.attributes.unit_of_measurement || "ppm"}` : "N/A";
+      const level = !ok ? "bad" : v < 800 ? "ok" : v <= 1200 ? "warn" : "bad";
+      row.classList.toggle("na", !ok);
+      row.querySelector(".tval").textContent = txt;
+      row.querySelector(".led").className = `led ${level}`;
+      row.querySelector(".tbar i").style.width = ok ? `${Math.max(0, Math.min(100, ((v - 400) / 1600) * 100))}%` : "0";
+      const word = !ok ? "unavailable" : level === "ok" ? "good" : level === "warn" ? "moderate" : "poor";
+      row.setAttribute("aria-label", `${row.querySelector(".tname").textContent} CO2: ${ok ? `${txt}, ${word}` : word}`);
+    }
 
     // Temperatures
     let tOk = 0;
@@ -740,6 +791,11 @@ class EngineeringConsoleCard extends HTMLElement {
     );
     root.querySelectorAll("[data-scene]").forEach((b) =>
       b.addEventListener("click", () => this._applyScene(this._config.scenes[+b.dataset.scene]))
+    );
+    root.querySelectorAll("[data-co2]").forEach((b) =>
+      b.addEventListener("click", () =>
+        this.dispatchEvent(new CustomEvent("hass-more-info", { detail: { entityId: b.dataset.co2 }, bubbles: true, composed: true }))
+      )
     );
     root.querySelectorAll("[data-temp]").forEach((b) =>
       b.addEventListener("click", () =>
