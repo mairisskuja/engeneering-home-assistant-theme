@@ -9,6 +9,8 @@
 //   zone: zone.home                  # optional; its name is the title
 //   title: My console                # optional; overrides the zone name
 //   exclude: [light.some_light]      # optional
+//   area_order: [ieeja, koridors]     # optional; area ids or names listed first,
+//                                    # the rest keep floor/name order
 //   scenes:                          # optional, replaces the defaults;
 //                                    # shown as big tags (current floor) and
 //                                    # as small keys in every area module
@@ -17,7 +19,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.6.0";
+const VERSION = "0.7.0";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -294,7 +296,14 @@ class EngineeringConsoleCard extends HTMLElement {
       });
     }
     const floorIndex = (f) => floors.findIndex((x) => x.floor_id === f);
+    const order = (this._config.area_order || []).map((x) => String(x).toLowerCase());
+    const rank = (a) => {
+      const i = order.findIndex((x) => x === a.id.toLowerCase() || x === a.name.toLowerCase());
+      return i < 0 ? Infinity : i;
+    };
     areaList.sort((a, b) => {
+      const ra = rank(a), rb = rank(b);
+      if (ra !== rb) return ra - rb;
       const fa = floorIndex(a.floor), fb = floorIndex(b.floor);
       return (fa < 0 ? 99 : fa) - (fb < 0 ? 99 : fb) || a.name.localeCompare(b.name);
     });

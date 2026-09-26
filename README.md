@@ -22,7 +22,7 @@ An industrial control-panel theme for Home Assistant: graphite or light-grey pan
 
 `www/engineering-console-card.js` is a lighting console card in the same industrial style. It's an original implementation with no dependencies, visually inspired by the [Workshop Console](https://workshop-console-demo.vercel.app/) demo (a separate commercial product; none of its code or assets are used). It provides:
 
-- **Every light, automatically**: all `light.*` entities, grouped into one module per area, with a tab per floor (sorted by floor level).
+- **Every light, automatically**: all `light.*` entities, grouped into one module per area, with a tab per floor (sorted by floor level). Areas are ordered by floor and then name, except that any listed in `area_order` come first, in that order.
 - **A knob per light**: drag or scroll to dim; tap, Enter or Space to toggle. There's no keyboard dimming, so screen readers announce the knob as an on/off switch with its brightness. Lights without dimming get an on/off key. Unavailable lights are hatched and disabled.
 - **An on/off toggle per area**, for all of that area's available lights.
 - **A title from a zone**: the header and LCD show the name of `zone` (default `zone.home`, i.e. your home location's name), or a fixed `title` if set.
@@ -36,6 +36,7 @@ type: custom:engineering-console-card
 zone: zone.home                # optional; the zone's name is the console title
 title: My console              # optional; overrides the zone name
 exclude: [light.some_light]    # optional
+area_order: [ieeja, koridors]  # optional; area ids or names shown first, in this order
 scenes:                        # optional; colours: cream, yellow, orange, brown, dark
   - { name: "ON", color: cream, brightness: 100, kelvin: 4000 }
   - { name: "OFF", color: dark, brightness: 0 }

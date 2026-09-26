@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.7 (2026-09-26)
+
+- Console card 0.7.0: new `area_order` option. The listed areas (by id or name) are shown first in the given order, and the rest keep the floor-then-name order; this applies on every floor tab.
+- `dashboards/lights.json`: `area_order: [ieeja, koridors, maira_birojs, dzivojama_zona, virtuve, trepes]`.
+
 ## 0.3.6 (2026-09-26)
 
 - Console card 0.6.0: removed keyboard brightness adjustment (arrow keys, PageUp/PageDown, Home/End) and the "arrow keys adjust" hint. Knobs are now exposed as ARIA switches (Enter/Space toggle), with the brightness in the accessible name. Drag and scroll dimming are unchanged.
