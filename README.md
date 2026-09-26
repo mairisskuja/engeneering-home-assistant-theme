@@ -22,11 +22,12 @@ An industrial control-panel theme for Home Assistant: graphite or light-grey pan
 
 `www/engineering-console-card.js` is a lighting console card in the same industrial style. It's an original implementation with no dependencies, visually inspired by the [Workshop Console](https://workshop-console-demo.vercel.app/) demo (a separate commercial product; none of its code or assets are used). It provides:
 
-- **Every light, automatically**: all `light.*` entities, grouped into one module per area, with a tab per floor (sorted by floor level). Areas are ordered by floor and then name, except that any listed in `area_order` come first, in that order.
+- **Every light, automatically**: all `light.*` entities, grouped into one module per area, with a tab per floor (sorted by floor level). Areas are ordered by floor and then name, except for areas listed in `area_order`: those before `"..."` come first and those after it come last, each in the given order.
 - **A knob per light**: drag or scroll to dim; tap, Enter or Space to toggle. There's no keyboard dimming, so screen readers announce the knob as an on/off switch with its brightness. Lights without dimming get an on/off key. Unavailable lights are hatched and disabled.
 - **An on/off toggle per area**, for all of that area's available lights.
 - **A title from a zone**: the header and LCD show the name of `zone` (default `zone.home`, i.e. your home location's name), or a fixed `title` if set.
 - **Blinkenlights**: every 30 seconds, and on every scene change, the LCD dot matrix plays an early-computer front-panel sequence (column sweep with trail, random flicker, then each dot settles to its real state; about 3 s). It's skipped in hidden tabs and when the device prefers reduced motion.
+- **A temperature panel**, right after Scene selection, listing every `sensor.*` with `device_class: temperature`. Each row has a status LED, a trimmed name, the reading and a −10…40 °C gauge bar; unavailable sensors show N/A. Clicking a row opens HA's more-info dialog.
 - **An LCD summary** for the current tab (on, off and unavailable counts, average brightness, one dot per light), plus a **SYSTEM** fault list across all lights.
 - **Scene tags** (ON, READ, EVENING, NIGHT, OFF) that apply to the current tab, plus a row of **small scene keys in every area module** that apply the same scenes to just that area. Both send colour temperature only to lights that support it, and an area's keys are disabled when none of its lights are available.
 - **Accessibility and theming**: knobs and toggles are ARIA switches, and every text pair passes AA in both modes (checked in the browser). It follows the theme's dark mode.
@@ -36,7 +37,9 @@ type: custom:engineering-console-card
 zone: zone.home                # optional; the zone's name is the console title
 title: My console              # optional; overrides the zone name
 exclude: [light.some_light]    # optional
-area_order: [ieeja, koridors]  # optional; area ids or names shown first, in this order
+area_order: [koridors, "...", ieeja]  # optional; before "..." = first, after = last
+temperatures: true             # optional; temperature panel (default on)
+temperature_exclude: [sensor.smart_kettle_temperature]  # optional
 scenes:                        # optional; colours: cream, yellow, orange, brown, dark
   - { name: "ON", color: cream, brightness: 100, kelvin: 4000 }
   - { name: "OFF", color: dark, brightness: 0 }

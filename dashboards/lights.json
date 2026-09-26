@@ -1,7 +1,7 @@
 {
   "views": [
     {
-      "title": "Lights",
+      "title": "Main",
       "type": "panel",
       "theme": "engineering_theme",
       "cards": [
@@ -9,12 +9,13 @@
           "type": "custom:engineering-console-card",
           "zone": "zone.home",
           "area_order": [
-            "ieeja",
             "koridors",
             "maira_birojs",
             "dzivojama_zona",
             "virtuve",
-            "trepes"
+            "trepes",
+            "...",
+            "ieeja"
           ]
         }
       ]

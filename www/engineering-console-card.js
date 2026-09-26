@@ -9,8 +9,11 @@
 //   zone: zone.home                  # optional; its name is the title
 //   title: My console                # optional; overrides the zone name
 //   exclude: [light.some_light]      # optional
-//   area_order: [ieeja, koridors]     # optional; area ids or names listed first,
-//                                    # the rest keep floor/name order
+//   area_order: [koridors, "...", ieeja]  # optional; area ids or names. Areas before
+//                                    # "..." come first, after it last; the rest keep
+//                                    # floor/name order in between
+//   temperatures: true               # optional; temperature sensor panel
+//   temperature_exclude: [sensor.x]  # optional
 //   scenes:                          # optional, replaces the defaults;
 //                                    # shown as big tags (current floor) and
 //                                    # as small keys in every area module
@@ -19,7 +22,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.7.0";
+const VERSION = "0.8.0";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -195,6 +198,19 @@ const STYLE = `
   .mtag:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--rule); }
   .mtag:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: 0 3px 0 var(--rule); }
 
+  /* Temperature */
+  .temps { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .trow { width: 100%; display: grid; grid-template-columns: 10px 1fr auto; grid-template-rows: auto 4px;
+    column-gap: 10px; row-gap: 5px; align-items: center; padding: 6px 4px; background: none; border: 0;
+    border-bottom: 1px solid var(--face-lo); cursor: pointer; text-align: left; }
+  .trow:hover { background: var(--paper-hi); }
+  .tname { font: 12px/1.2 var(--fm); text-transform: uppercase; color: var(--soft); letter-spacing: .04em;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tval { font: 700 22px/1 var(--fc); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .tbar { grid-column: 2 / 4; height: 4px; background: var(--face-lo); border-radius: 2px; overflow: hidden; }
+  .tbar i { display: block; height: 100%; width: 0; background: var(--pointer); transition: width .4s; }
+  .trow.na .tval { color: var(--soft); }
+
   /* System */
   .leds { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); font: 13px var(--fm); text-transform: uppercase; }
@@ -228,7 +244,7 @@ class EngineeringConsoleCard extends HTMLElement {
     this._hass = hass;
     this.toggleAttribute("dark", !!hass.themes?.darkMode);
     const model = this._model();
-    const key = JSON.stringify([this._title(), this._tab, model.tabs.map((t) => t.id), model.areas.map((a) => [a.id, a.lights.map((l) => l.id + l.kind)])]);
+    const key = JSON.stringify([this._title(), model.temps.map((t) => t.id), this._tab, model.tabs.map((t) => t.id), model.areas.map((a) => [a.id, a.lights.map((l) => l.id + l.kind)])]);
     if (key !== this._structure) {
       this._structure = key;
       this._render(model);
@@ -297,9 +313,10 @@ class EngineeringConsoleCard extends HTMLElement {
     }
     const floorIndex = (f) => floors.findIndex((x) => x.floor_id === f);
     const order = (this._config.area_order || []).map((x) => String(x).toLowerCase());
+    const rest = order.indexOf("...") < 0 ? order.length : order.indexOf("...");
     const rank = (a) => {
       const i = order.findIndex((x) => x === a.id.toLowerCase() || x === a.name.toLowerCase());
-      return i < 0 ? Infinity : i;
+      return i < 0 ? rest : i; // unlisted areas sit at the "..." position
     };
     areaList.sort((a, b) => {
       const ra = rank(a), rb = rank(b);
@@ -318,7 +335,23 @@ class EngineeringConsoleCard extends HTMLElement {
     const areas = areaList.filter((a) =>
       this._tab === "all" ? true : this._tab === "other" ? !a.floor : a.floor === this._tab
     );
-    return { tabs, areas, all: lights };
+    return { tabs, areas, all: lights, temps: this._temps() };
+  }
+
+  _temps() {
+    if (this._config.temperatures === false) return [];
+    const h = this._hass;
+    const exclude = new Set(this._config.temperature_exclude || []);
+    return Object.values(h.states)
+      .filter((st) => st.entity_id.startsWith("sensor.") && st.attributes.device_class === "temperature")
+      .filter((st) => !exclude.has(st.entity_id) && !h.entities?.[st.entity_id]?.hidden)
+      .map((st) => ({
+        id: st.entity_id,
+        name: (st.attributes.friendly_name || st.entity_id)
+          .replace(/\s*(current\s+)?(temperature|temperatura)(\s+sensor)?\s*$/i, "")
+          .trim() || st.attributes.friendly_name,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }
 
   _title() {
@@ -399,6 +432,19 @@ class EngineeringConsoleCard extends HTMLElement {
               </div>
               <div class="hint">Drag or scroll a knob to dim · tap to toggle</div>
             </section>
+            ${model.temps.length ? `
+            <section class="module" aria-label="Temperature">
+              <div class="mhead"><h2 class="mtitle">Temperature</h2><span class="mmeta" data-tempmeta></span></div>
+              <ul class="temps">
+                ${model.temps.map((t) => `
+                  <li><button class="trow" data-temp="${esc(t.id)}">
+                    <span class="led"></span>
+                    <span class="tname">${esc(t.name)}</span>
+                    <span class="tval">—</span>
+                    <span class="tbar" aria-hidden="true"><i></i></span>
+                  </button></li>`).join("")}
+              </ul>
+            </section>` : ""}
             ${model.areas.map((a) => this._areaHtml(a)).join("")}
             <section class="module" aria-label="System">
               <div class="mhead"><h2 class="mtitle">System-01</h2></div>
@@ -502,6 +548,24 @@ class EngineeringConsoleCard extends HTMLElement {
     if (lcd) lcd.setAttribute("aria-label", `${on.length} on, ${this._lcd.off} off, ${na} unavailable, average brightness ${avg}%`);
     this._dotStates = sts;
     if (!this._animating) this._paintDots();
+
+    // Temperatures
+    let tOk = 0;
+    for (const row of root.querySelectorAll("[data-temp]")) {
+      const st = this._hass.states[row.dataset.temp];
+      const v = parseFloat(st?.state);
+      const ok = st && Number.isFinite(v);
+      tOk += ok ? 1 : 0;
+      const unit = st?.attributes.unit_of_measurement || "°C";
+      const txt = ok ? `${v.toFixed(1)}${unit}` : "N/A";
+      row.classList.toggle("na", !ok);
+      row.querySelector(".tval").textContent = txt;
+      row.querySelector(".led").className = `led ${ok ? "ok" : "bad"}`;
+      const c = unit === "°F" ? (v - 32) / 1.8 : v;
+      row.querySelector(".tbar i").style.width = ok ? `${Math.max(0, Math.min(100, ((c + 10) / 50) * 100))}%` : "0";
+      row.setAttribute("aria-label", `${row.querySelector(".tname").textContent}: ${ok ? txt : "unavailable"}`);
+    }
+    set("[data-tempmeta]", `${tOk}/${model.temps.length} online`);
 
     // System: faults across ALL lights, not just the tab
     const faults = model.all.filter((l) => this._state(l.id).na);
@@ -654,6 +718,11 @@ class EngineeringConsoleCard extends HTMLElement {
     );
     root.querySelectorAll("[data-scene]").forEach((b) =>
       b.addEventListener("click", () => this._applyScene(this._config.scenes[+b.dataset.scene]))
+    );
+    root.querySelectorAll("[data-temp]").forEach((b) =>
+      b.addEventListener("click", () =>
+        this.dispatchEvent(new CustomEvent("hass-more-info", { detail: { entityId: b.dataset.temp }, bubbles: true, composed: true }))
+      )
     );
     root.querySelectorAll("[data-ascene]").forEach((b) =>
       b.addEventListener("click", () => this._applyScene(this._config.scenes[+b.dataset.ascene], b.dataset.sarea))

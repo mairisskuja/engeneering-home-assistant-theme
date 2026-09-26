@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.8 (2026-09-26)
+
+- Console card 0.8.0:
+  - **Temperature panel**, placed after Scene selection. It auto-discovers every temperature sensor and shows an LED, a trimmed name, the value and a gauge bar per sensor, plus an online count; rows open the more-info dialog. New options `temperatures` and `temperature_exclude`.
+  - `area_order` accepts a `"..."` placeholder: areas listed after it are placed last.
+- Lights dashboard: Ieeja moved to the last slot before System-01. The view title is synced to the live "Main".
+- Verified in the browser: module order, all 10 sensors (7 online), and that more-info opens for the clicked sensor.
+
 ## 0.3.7 (2026-09-26)
 
 - Console card 0.7.0: new `area_order` option. The listed areas (by id or name) are shown first in the given order, and the rest keep the floor-then-name order; this applies on every floor tab.
