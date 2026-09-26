@@ -25,7 +25,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.10.1";
+const VERSION = "0.10.2";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -124,17 +124,16 @@ const STYLE = `
   .mtitle { font: 600 19px/1.1 var(--fc); text-transform: uppercase; letter-spacing: .03em; margin: 0; }
   .mmeta { font: 12px var(--fm); color: var(--soft); margin-left: auto; text-transform: uppercase; }
   .wide { grid-column: 1 / -1; }
-  @media (min-width: 700px) { .summary { grid-column: span 2; } }
 
   /* LCD */
   .lcd {
     background: var(--lcd); border-radius: 8px; padding: 16px 18px;
     border: 3px solid #2c2e33; box-shadow: inset 0 0 0 2px #000, inset 0 6px 16px rgba(0,0,0,.6);
-    display: flex; gap: 18px; align-items: center; justify-content: space-between;
+    display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: center; justify-content: space-between;
     color: var(--lcd-soft); font: 18px/1.5 var(--fm); letter-spacing: .04em; min-height: 128px;
   }
   .lcd .l1 { color: var(--lcd-hi); font-size: 22px; }
-  .dots { display: grid; grid-template-columns: repeat(var(--cols, 8), 11px); gap: 5px; flex: none; }
+  .dots { display: grid; grid-template-columns: repeat(var(--cols, 8), 11px); gap: 5px; flex: none; margin-left: auto; }
   .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--lcd-dim); }
   .dot.on { background: var(--lcd-hi); box-shadow: 0 0 5px var(--lcd-hi); }
   .dot.na { background: transparent; box-shadow: inset 0 0 0 1.5px #7a3b2a; }

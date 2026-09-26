@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.13 (2026-09-26)
+
+- Console card 0.10.2: the ALL (LCD summary) module no longer spans two columns; it's a regular grid cell like the other modules. Inside the LCD, the dot matrix wraps below the text lines, aligned right. The blinkenlights animation is unchanged.
+
 ## 0.3.12 (2026-09-26)
 
 - Console card 0.10.1: fix — the card now re-renders when an entity, area or floor is renamed. Before this, renamed lights and sensors kept their old names until the list of entities changed.
