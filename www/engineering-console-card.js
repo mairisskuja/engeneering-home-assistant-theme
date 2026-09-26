@@ -29,7 +29,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.16.1";
+const VERSION = "0.17.0";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -187,18 +187,23 @@ const STYLE = `
   .pill:disabled { opacity: .5; cursor: not-allowed; }
 
   /* Scene tags */
-  .tags { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 12px 10px; }
-  .module.scenes { display: flex; flex-direction: column; }
-  .module.scenes .hint { margin-top: auto; padding-top: 14px; }
-  .tag { position: relative; height: 108px; border-radius: 9px; border: 2px solid var(--rule);
-    box-shadow: 0 5px 0 var(--rule); cursor: pointer; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 4px; padding: 0 6px;
-    transition: transform .05s, box-shadow .05s; }
-  .tag:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--rule); }
-  .tag::before { content: ""; position: absolute; top: 12px; width: 12px; height: 12px; border-radius: 50%;
-    background: rgba(0,0,0,.28); box-shadow: inset 0 1px 2px rgba(0,0,0,.4); }
-  .tag b { font: 700 22px/1 var(--fc); text-transform: uppercase; }
-  .tag span { font: 11px var(--fm); letter-spacing: .08em; }
+  .scenebar { background: var(--paper); display: flex; align-items: center; gap: 16px; padding: 10px 16px 14px; }
+  .scenebar .mtitle { flex: none; }
+  .scenebar .mmeta { margin-left: 0; }
+  .tags { flex: 1; display: flex; gap: 8px; min-width: 0; }
+  .tag { position: relative; flex: 1 1 0; min-width: 0; height: 44px; border-radius: 6px; border: 2px solid var(--rule);
+    box-shadow: 0 4px 0 var(--rule); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    gap: 6px; padding: 0 8px 0 22px; transition: transform .05s, box-shadow .05s; }
+  .tag:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--rule); }
+  .tag::before { content: ""; position: absolute; left: 8px; top: 50%; margin-top: -4px; width: 8px; height: 8px;
+    border-radius: 50%; background: rgba(0,0,0,.28); box-shadow: inset 0 1px 2px rgba(0,0,0,.4); }
+  .tag b { font: 700 17px/1 var(--fc); text-transform: uppercase; white-space: nowrap; }
+  .tag span { font: 11px var(--fm); letter-spacing: .04em; white-space: nowrap; }
+  @media (max-width: 700px) {
+    .scenebar { flex-wrap: wrap; }
+    .tags { flex-basis: 100%; order: 3; }
+    .tag span { display: none; }
+  }
   .t-cream { background: linear-gradient(#f4f2ec, var(--tag-cream)); color: #1d1d1b; }
   .t-yellow { background: linear-gradient(#f3cf66, var(--tag-yellow)); color: #1d1d1b; }
   .t-orange { background: linear-gradient(#ff6e36, var(--tag-orange)); color: #1d1d1b; }
@@ -239,7 +244,6 @@ const STYLE = `
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); font: 13px var(--fm); text-transform: uppercase; }
   .leds li { display: flex; align-items: center; gap: 10px; }
   .verdict { font: 700 22px/1 var(--fc); text-transform: uppercase; text-align: right; margin-top: 18px; }
-  .hint { font: 11px var(--fm); color: var(--soft); text-align: right; margin-top: 10px; text-transform: uppercase; }
 
   @media (max-width: 600px) {
     .wrap { padding: 8px; }
@@ -510,6 +514,16 @@ class EngineeringConsoleCard extends HTMLElement {
               <div class="clock" data-clock></div>
             </div>
           </div>
+          <section class="scenebar" aria-label="Scenes">
+            <h2 class="mtitle">Scenes</h2>
+            <div class="tags">
+              ${c.scenes.map((s, i) => `
+                <button class="tag t-${esc(s.color || "cream")}" data-scene="${i}">
+                  <b>${esc(s.name)}</b>${s.brightness ? `<span>${s.brightness}%</span>` : ""}
+                </button>`).join("")}
+            </div>
+            <span class="mmeta">${esc(scope)}</span>
+          </section>
           <div class="grid">
             <section class="module summary" aria-label="Summary">
               <div class="mhead"><h2 class="mtitle">${esc(scope)}</h2><span class="mmeta">Lights</span></div>
@@ -545,16 +559,6 @@ class EngineeringConsoleCard extends HTMLElement {
                   </button></li>`).join("")}
               </ul>
             </section>` : ""}
-            <section class="module scenes" aria-label="Scenes">
-              <div class="mhead"><h2 class="mtitle">Scene selection</h2><span class="mmeta">${esc(scope)}</span></div>
-              <div class="tags">
-                ${c.scenes.map((s, i) => `
-                  <button class="tag t-${esc(s.color || "cream")}" data-scene="${i}">
-                    <b>${esc(s.name)}</b><span>[${s.brightness ? `${s.brightness}%` : "OFF"}]</span>
-                  </button>`).join("")}
-              </div>
-              <div class="hint">Drag or scroll a knob to dim · tap to toggle</div>
-            </section>
             ${model.areas.map((a) => this._areaHtml(a)).join("")}
             <section class="module" aria-label="System">
               <div class="mhead"><h2 class="mtitle">System-01</h2></div>

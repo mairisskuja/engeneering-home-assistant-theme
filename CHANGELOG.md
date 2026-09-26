@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.24 (2026-09-27)
+
+- Console card 0.17.0: Scene selection is now a slim, full-width **Scenes** strip under the title bar (68 px tall). All five scenes are compact, equal-width key caps in one row, showing the name and brightness (no brightness label for OFF). This frees a grid cell, so the first grid row is ALL and Temperature and Humidity and light panels move up the page. The drag/tap hint text was removed. On narrow screens the strip wraps and hides the percentages.
+
 ## 0.3.23 (2026-09-26)
 
 - Console card 0.16.1: the LCD line is fixed text, `STATUS: NOMINAL // LINK OK · n ON` (no fault count; SYSTEM-01 keeps its own verdict), at 13 px on a single line (281 of 320 px used, room for two-digit counts).
