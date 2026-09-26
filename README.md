@@ -18,6 +18,28 @@ An industrial control-panel theme for Home Assistant: graphite or light-grey pan
 - **Accessible in both modes**: 166 WCAG 2.2 AA contrast checks run before every deploy, including every code-editor syntax colour. The live UI was also scanned in a browser.
 - **Orange is used deliberately**: bright orange appears only as a fill with dark text on it. Anywhere orange is text in light mode, it's the dark `#a34405`.
 
+## Console dashboard
+
+`www/engineering-console-card.js` is a lighting console card in the same industrial style. It's an original implementation with no dependencies, visually inspired by the [Workshop Console](https://workshop-console-demo.vercel.app/) demo (a separate commercial product; none of its code or assets are used). It provides:
+
+- **Every light, automatically**: all `light.*` entities, grouped into one module per area, with a tab per floor (sorted by floor level).
+- **A knob per light**: drag, scroll or use the arrow keys to dim; tap, Enter or Space to toggle; Home/End for off/full. Lights without dimming get an on/off key. Unavailable lights are hatched and disabled.
+- **An on/off toggle per area**, for all of that area's available lights.
+- **An LCD summary** for the current tab (on, off and unavailable counts, average brightness, one dot per light), plus a **SYSTEM** fault list across all lights.
+- **Scene tags** (ALL ON, READ, EVENING, NIGHT, OFF) that apply to the current tab. They send colour temperature only to lights that support it.
+- **Accessibility and theming**: knobs are ARIA sliders, toggles are switches, and every text pair passes AA in both modes (checked in the browser). It follows the theme's dark mode.
+
+```yaml
+type: custom:engineering-console-card
+title: Essential               # optional
+exclude: [light.some_light]    # optional
+scenes:                        # optional; colours: cream, yellow, orange, brown, dark
+  - { name: ALL ON, color: cream, brightness: 100, kelvin: 4000 }
+  - { name: "OFF", color: dark, brightness: 0 }
+```
+
+Install it with `scripts/deploy.sh` (which copies `www/`), then `scripts/install_dashboard.sh <dashboard-url-path> dashboards/essential.json`. That registers the card as a Lovelace resource and saves a panel-view dashboard, backing up the old config first. Barlow Condensed and Share Tech Mono (OFL) are self-hosted with the other fonts.
+
 ## Palette
 
 | Role | Dark | Light |
@@ -126,6 +148,10 @@ It reads both mode blocks from the theme file. Where the theme doesn't override 
 themes/engineering_theme.yaml   The theme (dark + light)
 www/theme-fonts.js              Font bridge (frontend.extra_module_url)
 www/fonts/                      Self-hosted fonts, fonts.css and licences
+www/engineering-console-card.js Lighting console card (custom:engineering-console-card)
+dashboards/essential.json       Example dashboard config for the console
+scripts/install_dashboard.sh    Registers the card and saves a dashboard config
+scripts/ha_ws.py                Runs HA websocket commands on the host
 scripts/contrast_check.py       WCAG gate for both modes (no dependencies)
 scripts/deploy.sh               SSH deploy: check, back up, copy, reload, verify
 scripts/verify_theme.py         Runs on the HA host; confirms both modes loaded
@@ -146,7 +172,8 @@ hacs.json                       HACS metadata
 - Original theme and dashboard design: [Rudy Mens / LazyAdmin.nl](https://github.com/ruudmens/home-assistant-dashboard), MIT.
 - Iconic Theme (accessibility rework, font bridge, tooling): [Mairis Skuja [Iconic FAB]](https://github.com/mairisskuja/iconic-home-assistant-theme), MIT.
 - Engineering Theme: Mairis Skuja, built with [Claude Code](https://claude.com/claude-code).
-- Fonts: Hanken Grotesk (© 2021 The Hanken Grotesk Project Authors, OFL), Syncopate (© 2010 Astigmatic, Apache 2.0), IBM Plex Mono (© 2017 IBM Corp., OFL).
+- Fonts: Hanken Grotesk (© 2021 The Hanken Grotesk Project Authors, OFL), Syncopate (© 2010 Astigmatic, Apache 2.0), IBM Plex Mono (© 2017 IBM Corp., OFL), Barlow Condensed and Share Tech Mono (OFL).
+- Console card look: inspired by [Workshop Console](https://workshop-console-demo.vercel.app/). This is an independent implementation, not affiliated with that product.
 - Visual inspiration: [teenage.engineering](https://teenage.engineering/). This project isn't affiliated with or endorsed by teenage engineering, and it doesn't include any of their fonts or assets.
 
 This repository is released under the [GNU GPL v3.0](LICENSE). It incorporates MIT-licensed work from the projects above; their notices are kept in [NOTICE](NOTICE). The font licences are in `www/fonts/`.

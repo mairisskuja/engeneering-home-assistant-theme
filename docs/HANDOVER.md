@@ -18,6 +18,7 @@ Development was AI-accelerated with Claude Code: HA frontend source research, fo
 | Deployed to the reference HA instance | Yes. Both modes are loaded (78 dark / 79 light colour variables), and the font bridge is registered at `/local/engineering-theme/theme-fonts.js` |
 | Browser QA (Chrome, macOS) | Overview, profile and history chart: zero contrast failures in both modes. Template editor: zero in light; dark checked visually only (see open item 1). Latvian glyphs confirmed in Syncopate. |
 | HACS | `hacs.json` present; installable as a custom repository (the font bridge is a manual step) |
+| Console dashboard | `custom:engineering-console-card` 0.1.0, installed on the reference instance as the **Essential** dashboard (`/dashboard-essential/0`) and registered as a Lovelace resource. All controls were verified with service calls intercepted; not yet exercised against real lights. |
 
 Reference environment: Home Assistant OS, Core **2026.9.3**, frontend **20260826.7**.
 
@@ -95,6 +96,14 @@ Backups made by `deploy.sh` are stored in `/config/backups_manual/engineering_th
 
 ## 6. Open items and next steps
 
+0. **Console card, next steps:**
+   - Exercise it against real lights; so far only intercepted calls have been verified.
+   - Test on the wall tablet and on a phone. The layout switches to one column below 600px.
+   - Consider real HA scenes, or per-area scenes, in the tags.
+   - Consider showing colour and colour temperature on the knobs.
+   - Note: the card finds lights on each state update. A new light appears automatically, but it goes under "Unassigned" until it's given an area.
+   - Testing tip: HA suspends its connection in hidden tabs, so a background browser tab shows an empty card until it's brought forward.
+
 1. **Authoritative dark-mode scan of the template editor.** Set Profile → Theme → Dark, reload, and run a contrast scan. It looked correct in a screenshot, but the automated scan was unreliable after the in-memory switch (section 5).
 2. **Remaining visual QA in both modes:**
    - a slider inside a more-info dialog (every light was unavailable during testing);
@@ -109,6 +118,9 @@ Backups made by `deploy.sh` are stored in `/config/backups_manual/engineering_th
 7. **Version floor.** Only tested on 2026.9.3. Add `"homeassistant"` to `hacs.json` once a minimum version is known.
 
 ## 7. Reference instance notes
+
+- The **Essential** dashboard (`dashboard-essential`) now holds a single panel view with the console card. The previous config (just a "Key lights" heading) is backed up at `/config/backups_manual/lovelace.dashboard-essential.<timestamp>.json`.
+- Lovelace resource: `/local/engineering-theme/engineering-console-card.js?v=<version>-<timestamp>`. `install_dashboard.sh` updates the `v` parameter on every run.
 
 These aren't part of this repo, but they exist on the instance where the theme was developed:
 

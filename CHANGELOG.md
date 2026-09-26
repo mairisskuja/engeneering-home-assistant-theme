@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.0 (2026-09-26)
+
+### Console dashboard
+- New `custom:engineering-console-card`: an industrial lighting console controlling every light, inspired by the Workshop Console demo's look (original code).
+  - Lights are discovered automatically and grouped by area, with a tab per floor.
+  - Brightness knobs work by drag, wheel and keyboard (ARIA sliders); there are on/off toggles per area.
+  - An LCD summary with a dot matrix, a SYSTEM fault list, and scene tags scoped to the current floor.
+  - Light and dark variants.
+- `dashboards/essential.json`, and `scripts/install_dashboard.sh` + `scripts/ha_ws.py` to register the resource and save the dashboard over the websocket API (with a backup).
+- Self-hosted Barlow Condensed and Share Tech Mono (OFL).
+- Verified in the browser on the reference instance: 25 lights in 14 areas and 4 floor tabs rendered; zero contrast failures across 111 text elements in each mode. Keyboard, wheel, drag, tap, area toggle, scene and floor-scoping behaviour were checked with service calls intercepted, so no real lights changed.
+
 ## 0.2.0 (2026-09-26)
 
 The Engineering redesign: an industrial control-panel theme with dark and light modes and teenage.engineering-inspired type.

@@ -1,0 +1,14 @@
+{
+  "views": [
+    {
+      "title": "Console",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "custom:engineering-console-card",
+          "title": "Essential"
+        }
+      ]
+    }
+  ]
+}
