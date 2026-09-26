@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.28 (2026-09-27)
+
+- Reference instance: Koridors' six ceiling lights are combined in a Home Assistant light group, `light.griesti`, with its members hidden. The console shows a single "Griesti" knob, and the area toggle and scene keys drive all six through the group. No card change was needed: the card already skips hidden entities. Tip for other rooms: create a light group helper with "Hide members" enabled and assign it to the area.
+
 ## 0.3.27 (2026-09-27)
 
 - Console card 0.17.3: fix — the area prefix is stripped from light names only when the area name is a whole word followed by a separator (`/`, `:`, `-`, `–` or a space). Before, "Virtuves Led" in area "Virtuve" showed as "S LED" and "Ieejas gaisma" in "Ieeja" as "S GAISMA".

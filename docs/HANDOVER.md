@@ -151,6 +151,7 @@ These aren't part of this repo, but they exist on the instance where the theme w
   - Master guļamistaba: `light.master_bedroom_floor` → "Uz grīdas", `light.master_bredroom_griesti` → "Griesti".
   - Nikas guļamistaba: `light.nika_bedroom_galds` → "Galds", `light.nika_bedroom_griesti` → "Griesti".
   - Ieeja: `light.kajplats_e27_ws_globe_152` → "Ieejas gaisma".
+  - **Light group `light.griesti`** ("Griesti", group helper, config entry `01M3FSCHZ7XFPV6H557Y936G1Z`, area Koridors) combines the six Koridors ceiling lights `light.light_8`…`light_13`, with `hide_members: true`. The console card skips hidden entities, so Koridors shows one knob that controls all six. Manage it under Settings → Devices & services → Helpers; delete the helper to unhide the members.
   - The Lights dashboard excludes `sensor.smart_kettle_55b1_temperature` and `sensor.alpstuga_air_quality_moni_temperature_sensor` via `temperature_exclude`.
   - The legacy tado zone **Chillspot**: its 8 entities were removed from the entity registry. The device itself remains (disabled), because the tado integration doesn't support device removal. To remove it completely, delete the Chillspot zone in the tado app. If tado recreates the entities on reload, they'll be disabled and won't appear on dashboards.
   - Registry backups: `core.*_registry.pre-chillspot.<timestamp>`.

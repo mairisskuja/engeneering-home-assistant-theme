@@ -24,6 +24,7 @@ An industrial control-panel theme for Home Assistant: graphite or light-grey pan
 
 - **Every light, automatically**: all `light.*` entities, grouped into one module per area, with a tab per floor (sorted by floor level). Areas are ordered by floor and then name, except for areas listed in `area_order`: those before `"..."` come first and those after it come last, each in the given order.
 - **A knob per light**: drag or scroll to dim; tap, Enter or Space to toggle. There's no keyboard dimming, so screen readers announce the knob as an on/off switch with its brightness. Lights without dimming get an on/off key. Unavailable lights are hatched and disabled.
+- **Grouped fixtures**: to show several bulbs as one knob, create an HA light group helper with *Hide members* and assign it to the area; hidden entities are skipped, the group appears as a single control.
 - **An on/off toggle per area**, for all of that area's available lights.
 - **A title from a zone**: the header shows the name of `zone` (default `zone.home`, i.e. your home location's name), or a fixed `title` if set.
 - **Blinkenlights**: every 30 seconds, and on every scene change, the LCD dot matrix plays an early-computer front-panel sequence (column sweep with trail, random flicker, then each dot settles to its real state; about 3 s). It's skipped in hidden tabs and when the device prefers reduced motion.
