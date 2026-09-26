@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.3 (2026-09-26)
+
+- Console card 0.3.0: the title comes from a zone. The new `zone` option defaults to `zone.home`; its friendly name is shown in the header and on the LCD, `title` still overrides it, and HA's `location_name` is the fallback. It updates live when the zone is renamed. The remembered floor tab is now stored per zone.
+- `dashboards/lights.json` synced with the live dashboard (view title "Lights", view theme `engineering_theme`) and no longer hardcodes a title. On the reference instance it shows "Mājas".
+
 ## 0.3.2 (2026-09-26)
 
 - Reference instance: the console dashboard moved from `/dashboard-essential/0` to `/dashboard-lights/0`. HA has no URL rename, so it was recreated, its config copied, and the old one deleted after a backup. The example config was renamed to `dashboards/lights.json`.

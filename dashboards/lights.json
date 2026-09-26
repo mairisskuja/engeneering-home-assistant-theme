@@ -1,12 +1,13 @@
 {
   "views": [
     {
-      "title": "Console",
+      "title": "Lights",
       "type": "panel",
+      "theme": "engineering_theme",
       "cards": [
         {
           "type": "custom:engineering-console-card",
-          "title": "Essential"
+          "zone": "zone.home"
         }
       ]
     }

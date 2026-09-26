@@ -6,7 +6,8 @@
 // dependencies.
 //
 //   type: custom:engineering-console-card
-//   title: ESSENTIAL                 # optional
+//   zone: zone.home                  # optional; its name is the title
+//   title: My console                # optional; overrides the zone name
 //   exclude: [light.some_light]      # optional
 //   scenes:                          # optional, replaces the defaults;
 //                                    # shown as big tags (current floor) and
@@ -16,7 +17,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.2.0";
+const VERSION = "0.3.0";
 
 const DEFAULT_SCENES = [
   { name: "ALL ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -203,7 +204,7 @@ const STYLE = `
 class EngineeringConsoleCard extends HTMLElement {
   setConfig(config) {
     this._config = {
-      title: "CONSOLE",
+      zone: "zone.home",
       exclude: [],
       scenes: DEFAULT_SCENES,
       ...config,
@@ -211,14 +212,14 @@ class EngineeringConsoleCard extends HTMLElement {
     this._structure = null;
     this._pending = new Map(); // entity_id -> local brightness while dragging
     if (!this.shadowRoot) this.attachShadow({ mode: "open" });
-    this._tab = storage.get(`ecc-tab-${this._config.title}`) || "all";
+    this._tab = storage.get(`ecc-tab-${this._config.zone}`) || "all";
   }
 
   set hass(hass) {
     this._hass = hass;
     this.toggleAttribute("dark", !!hass.themes?.darkMode);
     const model = this._model();
-    const key = JSON.stringify([this._tab, model.tabs.map((t) => t.id), model.areas.map((a) => [a.id, a.lights.map((l) => l.id + l.kind)])]);
+    const key = JSON.stringify([this._title(), this._tab, model.tabs.map((t) => t.id), model.areas.map((a) => [a.id, a.lights.map((l) => l.id + l.kind)])]);
     if (key !== this._structure) {
       this._structure = key;
       this._render(model);
@@ -300,6 +301,16 @@ class EngineeringConsoleCard extends HTMLElement {
     return { tabs, areas, all: lights };
   }
 
+  _title() {
+    // Explicit title, else the zone's name (zone.home = the home location), else HA's location name.
+    return (
+      this._config.title ||
+      this._hass?.states[this._config.zone]?.attributes.friendly_name ||
+      this._hass?.config?.location_name ||
+      "Console"
+    );
+  }
+
   _shortName(name, areaId) {
     // Drop a leading "<area> / " style prefix; the module already names the area.
     const area = this._hass.areas?.[areaId]?.name;
@@ -335,7 +346,7 @@ class EngineeringConsoleCard extends HTMLElement {
         <div class="cross c-tl"></div><div class="cross c-tr"></div><div class="cross c-bl"></div><div class="cross c-br"></div>
         <div class="console">
           <div class="topbar">
-            <div class="brand">${esc(c.title)}</div>
+            <div class="brand">${esc(this._title())}</div>
             <div class="tabs" role="tablist" aria-label="Floors">
               ${model.tabs.map((t, i) => `
                 <button class="key" role="tab" data-tab="${esc(t.id)}" aria-selected="${t.id === this._tab}">
@@ -523,7 +534,7 @@ class EngineeringConsoleCard extends HTMLElement {
     const time = now.toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit" });
     el.textContent = `${date} · ${time}`.toUpperCase();
     const l1 = this.shadowRoot.querySelector("[data-l1]");
-    if (l1) l1.textContent = `${String(this._config.title).toUpperCase()} // ${time}`;
+    if (l1) l1.textContent = `${this._title().toUpperCase()} // ${time}`;
   }
 
   // ----- interaction ------------------------------------------------------
@@ -533,7 +544,7 @@ class EngineeringConsoleCard extends HTMLElement {
     root.querySelectorAll("[data-tab]").forEach((b) =>
       b.addEventListener("click", () => {
         this._tab = b.dataset.tab;
-        storage.set(`ecc-tab-${this._config.title}`, this._tab);
+        storage.set(`ecc-tab-${this._config.zone}`, this._tab);
         this._structure = null;
         this.hass = this._hass;
       })
