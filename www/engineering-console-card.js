@@ -17,7 +17,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.5.0";
+const VERSION = "0.6.0";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -388,7 +388,7 @@ class EngineeringConsoleCard extends HTMLElement {
                     <b>${esc(s.name)}</b><span>[${s.brightness ? `${s.brightness}%` : "OFF"}]</span>
                   </button>`).join("")}
               </div>
-              <div class="hint">Drag or scroll a knob to dim · tap to toggle · arrow keys adjust</div>
+              <div class="hint">Drag or scroll a knob to dim · tap to toggle</div>
             </section>
             ${model.areas.map((a) => this._areaHtml(a)).join("")}
             <section class="module" aria-label="System">
@@ -435,8 +435,7 @@ class EngineeringConsoleCard extends HTMLElement {
     }
     return `
       <div class="kn" data-light="${esc(l.id)}">
-        <div class="dial" role="slider" tabindex="0" aria-label="${esc(l.name)} brightness"
-          aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Off">
+        <div class="dial" role="switch" tabindex="0" aria-checked="false" aria-label="${esc(l.name)}">
           <svg viewBox="0 0 100 100" aria-hidden="true">
             ${ticks.join("")}
             <circle class="shadow" cx="47" cy="53" r="33"/>
@@ -598,8 +597,10 @@ class EngineeringConsoleCard extends HTMLElement {
       return;
     }
     const dial = kn.querySelector(".dial");
-    dial.setAttribute("aria-valuenow", String(s.pct));
-    dial.setAttribute("aria-valuetext", s.na ? "Unavailable" : s.on ? `${s.pct}%` : "Off");
+    // Keyboard: Enter/Space toggle only (no brightness keys), so expose it as a
+    // switch whose label carries the current brightness.
+    dial.setAttribute("aria-checked", String(s.on));
+    dial.setAttribute("aria-label", `${kn.querySelector(".name").textContent}, ${s.na ? "unavailable" : s.on ? `${s.pct}%` : "off"}`);
     dial.setAttribute("aria-disabled", String(s.na));
     dial.tabIndex = s.na ? -1 : 0;
     const angle = -SWEEP / 2 + (SWEEP * s.pct) / 100;
@@ -698,14 +699,8 @@ class EngineeringConsoleCard extends HTMLElement {
       this._wheelTimer = setTimeout(() => setPct(this._pending.get(id) ?? next, true), 250);
     }, { passive: false });
     dial.addEventListener("keydown", (e) => {
-      if (this._state(id).na) return;
-      const cur = this._state(id).pct;
-      const step = { ArrowUp: 5, ArrowRight: 5, ArrowDown: -5, ArrowLeft: -5, PageUp: 20, PageDown: -20 }[e.key];
-      if (step !== undefined) setPct(cur + step, true);
-      else if (e.key === "Home") setPct(0, true);
-      else if (e.key === "End") setPct(100, true);
-      else if (e.key === "Enter" || e.key === " ") this._call("toggle", id);
-      else return;
+      if (this._state(id).na || (e.key !== "Enter" && e.key !== " ")) return;
+      this._call("toggle", id);
       e.preventDefault();
     });
   }

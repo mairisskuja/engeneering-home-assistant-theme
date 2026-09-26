@@ -23,13 +23,13 @@ An industrial control-panel theme for Home Assistant: graphite or light-grey pan
 `www/engineering-console-card.js` is a lighting console card in the same industrial style. It's an original implementation with no dependencies, visually inspired by the [Workshop Console](https://workshop-console-demo.vercel.app/) demo (a separate commercial product; none of its code or assets are used). It provides:
 
 - **Every light, automatically**: all `light.*` entities, grouped into one module per area, with a tab per floor (sorted by floor level).
-- **A knob per light**: drag, scroll or use the arrow keys to dim; tap, Enter or Space to toggle; Home/End for off/full. Lights without dimming get an on/off key. Unavailable lights are hatched and disabled.
+- **A knob per light**: drag or scroll to dim; tap, Enter or Space to toggle. There's no keyboard dimming, so screen readers announce the knob as an on/off switch with its brightness. Lights without dimming get an on/off key. Unavailable lights are hatched and disabled.
 - **An on/off toggle per area**, for all of that area's available lights.
 - **A title from a zone**: the header and LCD show the name of `zone` (default `zone.home`, i.e. your home location's name), or a fixed `title` if set.
 - **Blinkenlights**: every 30 seconds, and on every scene change, the LCD dot matrix plays an early-computer front-panel sequence (column sweep with trail, random flicker, then each dot settles to its real state; about 3 s). It's skipped in hidden tabs and when the device prefers reduced motion.
 - **An LCD summary** for the current tab (on, off and unavailable counts, average brightness, one dot per light), plus a **SYSTEM** fault list across all lights.
 - **Scene tags** (ON, READ, EVENING, NIGHT, OFF) that apply to the current tab, plus a row of **small scene keys in every area module** that apply the same scenes to just that area. Both send colour temperature only to lights that support it, and an area's keys are disabled when none of its lights are available.
-- **Accessibility and theming**: knobs are ARIA sliders, toggles are switches, and every text pair passes AA in both modes (checked in the browser). It follows the theme's dark mode.
+- **Accessibility and theming**: knobs and toggles are ARIA switches, and every text pair passes AA in both modes (checked in the browser). It follows the theme's dark mode.
 
 ```yaml
 type: custom:engineering-console-card

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.6 (2026-09-26)
+
+- Console card 0.6.0: removed keyboard brightness adjustment (arrow keys, PageUp/PageDown, Home/End) and the "arrow keys adjust" hint. Knobs are now exposed as ARIA switches (Enter/Space toggle), with the brightness in the accessible name. Drag and scroll dimming are unchanged.
+- Accessibility trade-off: keyboard-only users can switch lights on and off but can no longer dim them. Floor tabs keep arrow-key navigation, since that only moves focus.
+
 ## 0.3.5 (2026-09-26)
 
 - Console card 0.5.0:
