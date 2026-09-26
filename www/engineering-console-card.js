@@ -29,7 +29,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.13.1";
+const VERSION = "0.13.2";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -528,16 +528,6 @@ class EngineeringConsoleCard extends HTMLElement {
                 </ul>
               </div>`).join("")}
             </section>
-            <section class="module scenes" aria-label="Scenes">
-              <div class="mhead"><h2 class="mtitle">Scene selection</h2><span class="mmeta">${esc(scope)}</span></div>
-              <div class="tags">
-                ${c.scenes.map((s, i) => `
-                  <button class="tag t-${esc(s.color || "cream")}" data-scene="${i}">
-                    <b>${esc(s.name)}</b><span>[${s.brightness ? `${s.brightness}%` : "OFF"}]</span>
-                  </button>`).join("")}
-              </div>
-              <div class="hint">Drag or scroll a knob to dim · tap to toggle</div>
-            </section>
             ${model.temps.length ? `
             <section class="module" aria-label="Temperature and humidity">
               <div class="mhead"><h2 class="mtitle">Temperature and Humidity</h2><span class="mmeta" data-tempmeta></span></div>
@@ -552,6 +542,16 @@ class EngineeringConsoleCard extends HTMLElement {
                   </button></li>`).join("")}
               </ul>
             </section>` : ""}
+            <section class="module scenes" aria-label="Scenes">
+              <div class="mhead"><h2 class="mtitle">Scene selection</h2><span class="mmeta">${esc(scope)}</span></div>
+              <div class="tags">
+                ${c.scenes.map((s, i) => `
+                  <button class="tag t-${esc(s.color || "cream")}" data-scene="${i}">
+                    <b>${esc(s.name)}</b><span>[${s.brightness ? `${s.brightness}%` : "OFF"}]</span>
+                  </button>`).join("")}
+              </div>
+              <div class="hint">Drag or scroll a knob to dim · tap to toggle</div>
+            </section>
             ${model.areas.map((a) => this._areaHtml(a)).join("")}
             <section class="module" aria-label="System">
               <div class="mhead"><h2 class="mtitle">System-01</h2></div>

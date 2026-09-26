@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.19 (2026-09-26)
+
+- Console card 0.13.2: Temperature and Humidity now comes before Scene selection (order: ALL → Temperature and Humidity → Scene selection → areas → System-01).
+
 ## 0.3.18 (2026-09-26)
 
 - Console card 0.13.1: the LCD fills the ALL module's full height (the module matches its row), with the title on top and the dot matrix centred below. Dots are 18 px (were 11 px), with a 9 px gap and a slightly stronger glow. Animation logic unchanged.
