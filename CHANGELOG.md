@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.14 (2026-09-26)
+
+- Console card 0.10.3: the LCD shows only "<ZONE> // <time>" and the animated dot matrix. The ON/OFF and N/A/AVG text lines were removed; the counts remain in the LCD's accessible label for screen readers.
+
 ## 0.3.13 (2026-09-26)
 
 - Console card 0.10.2: the ALL (LCD summary) module no longer spans two columns; it's a regular grid cell like the other modules. Inside the LCD, the dot matrix wraps below the text lines, aligned right. The blinkenlights animation is unchanged.

@@ -25,7 +25,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.10.2";
+const VERSION = "0.10.3";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -434,7 +434,7 @@ class EngineeringConsoleCard extends HTMLElement {
             <section class="module summary" aria-label="Summary">
               <div class="mhead"><h2 class="mtitle">${esc(scope)}</h2><span class="mmeta">Lights</span></div>
               <div class="lcd" role="img" data-lcdlabel>
-                <div><div class="l1" data-l1></div><div data-l2></div><div data-l3></div></div>
+                <div class="l1" data-l1></div>
                 <div class="dots" data-dots aria-hidden="true"></div>
               </div>
             </section>
@@ -558,8 +558,6 @@ class EngineeringConsoleCard extends HTMLElement {
     const avg = on.length ? Math.round(on.reduce((t, s) => t + s.pct, 0) / on.length) : 0;
     this._lcd = { on: on.length, off: sts.length - on.length - na, na, avg };
     const set = (sel, text) => { const el = root.querySelector(sel); if (el) el.textContent = text; };
-    set("[data-l2]", `ON ${String(on.length).padStart(2, "0")}   OFF ${String(this._lcd.off).padStart(2, "0")}`);
-    set("[data-l3]", `N/A ${String(na).padStart(2, "0")}   AVG ${String(avg).padStart(3, " ")}%`);
     const lcd = root.querySelector("[data-lcdlabel]");
     if (lcd) lcd.setAttribute("aria-label", `${on.length} on, ${this._lcd.off} off, ${na} unavailable, average brightness ${avg}%`);
     this._dotStates = sts;
