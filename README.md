@@ -2,11 +2,6 @@
 
 An industrial control-panel theme for Home Assistant: graphite or light-grey panels, square edges, a safety-orange accent and explicit status colours. Its typography is inspired by [teenage.engineering](https://teenage.engineering/). It has dark and light modes, both checked against WCAG 2.2 AA.
 
-> [!IMPORTANT]
-> **This theme is a fork of [Iconic Theme](https://github.com/mairisskuja/iconic-home-assistant-theme)**, which is itself **a fork of [ruudmens/home-assistant-dashboard](https://github.com/ruudmens/home-assistant-dashboard)** by Rudy Mens ([LazyAdmin.nl](https://lazyadmin.nl/smart-home/home-assistant-dashboard/)), specifically its `luxury_dashboard` theme.
->
-> Both forks were built in an **AI-accelerated development style with [Claude Code](https://claude.com/claude-code)**, with a gazillion changes along the way. Many thanks to Rudy for the original design, which was in turn inspired by [Handj on Dribbble](https://dribbble.com/shots/20757344-Smart-Home-Concept-Design-originality).
-
 ## Highlights
 
 - **Control-panel look**: flat panels with 1px edges and 2–4px corners, no drop shadows, and a graphite neutral scale shared by menus, dialogs and switches.
