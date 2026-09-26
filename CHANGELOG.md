@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.25 (2026-09-27)
+
+- Console card 0.17.1: area toggle fixes.
+  - The knob is centred in both states (3 px from each end; the on-state was 5 px from the right).
+  - Dark mode uses a light knob (`#e6e8eb`) with a dark edge instead of a dark knob with a bright ring, and a softer grey outline (`#6b737b`, 3.32:1 against the panel).
+  - New per-mode variables: `--pill-edge`, `--knob`, `--knob-edge`.
+
 ## 0.3.24 (2026-09-27)
 
 - Console card 0.17.0: Scene selection is now a slim, full-width **Scenes** strip under the title bar (68 px tall). All five scenes are compact, equal-width key caps in one row, showing the name and brightness (no brightness label for OFF). This frees a grid cell, so the first grid row is ALL and Temperature and Humidity and light panels move up the page. The drag/tap hint text was removed. On narrow screens the strip wraps and hides the percentages.

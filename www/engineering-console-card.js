@@ -29,7 +29,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.17.0";
+const VERSION = "0.17.1";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -74,6 +74,7 @@ const STYLE = `
     --paper: #e3e1dc; --paper-hi: #eeece8; --face: #f2f0eb; --face-lo: #d9d6cf;
     --rule: #1f1f1d; --grid: #c9c6bf; --ink: #1d1d1b; --soft: #55534e; --tick-off: #6f6c65;
     --orange: #ff5a1c; --pointer: #c73f0c; --pill-on: #e2480e;
+    --pill-edge: #1d1d1b; --knob: #f2f0eb; --knob-edge: #1d1d1b;
     --lcd: #1c1b19; --lcd-hi: #ff6b2b; --lcd-soft: #e0a070; --lcd-dim: #3a2a20;
     --ok: #3f7a33; --warn: #9a6a00; --bad: #c42b2b; --tab-dark: #2c2e33;
     --tag-cream: #e9e6de; --tag-yellow: #ecc14a; --tag-orange: #ff5a1c;
@@ -87,6 +88,7 @@ const STYLE = `
     --paper: #1f2226; --paper-hi: #262a2f; --face: #2a2e33; --face-lo: #1a1d20;
     --rule: #4a5057; --grid: #2c3035; --ink: #eceff2; --soft: #a9b0b8; --tick-off: #6b737b;
     --orange: #ff7a1a; --pointer: #ff7a1a; --pill-on: #ff7a1a;
+    --pill-edge: #6b737b; --knob: #e6e8eb; --knob-edge: #1a1d20;
     --lcd: #0f1113; --lcd-hi: #ff7a1a; --lcd-soft: #e8a36b; --lcd-dim: #2e2014;
     --ok: #3ecf6e; --warn: #ffc53d; --bad: #ff6b6b; --tab-dark: #0f1113;
     --tag-cream: #d9d6cf;
@@ -178,12 +180,14 @@ const STYLE = `
   .onoff { width: 64px; height: 64px; border-radius: 6px; margin: 20px 0 16px; }
 
   /* Pill switch */
+  /* 74x38 outer, 2px border -> 70x34 inside; 28px knob sits 3px from each edge */
   .pill { position: relative; width: 74px; height: 38px; border-radius: 19px; cursor: pointer; flex: none;
-    border: 2px solid var(--ink); background: var(--face-lo); padding: 0; }
+    border: 2px solid var(--pill-edge); background: var(--face-lo); padding: 0; }
   .pill::after { content: ""; position: absolute; top: 3px; left: 3px; width: 28px; height: 28px; border-radius: 50%;
-    background: var(--face); border: 2px solid var(--ink); transition: left .15s; }
+    background: var(--knob); border: 2px solid var(--knob-edge); box-shadow: 0 1px 2px rgba(0,0,0,.35);
+    transition: left .15s; }
   .pill[aria-checked="true"] { background: var(--pill-on); }
-  .pill[aria-checked="true"]::after { left: 37px; }
+  .pill[aria-checked="true"]::after { left: 39px; }
   .pill:disabled { opacity: .5; cursor: not-allowed; }
 
   /* Scene tags */
