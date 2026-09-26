@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.23 (2026-09-26)
+
+- Console card 0.16.1: the LCD line is fixed text, `STATUS: NOMINAL // LINK OK · n ON` (no fault count; SYSTEM-01 keeps its own verdict), at 13 px on a single line (281 of 320 px used, room for two-digit counts).
+
 ## 0.3.22 (2026-09-26)
 
 - Console card 0.16.0: the LCD title line is now `STATUS: … // LINK OK · n ON`, with no LED and no time. The status is the same verdict as SYSTEM-01 ("NOMINAL" when all lights are online, otherwise the fault count). The line wraps when it's too long.

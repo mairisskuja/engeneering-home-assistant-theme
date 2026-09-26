@@ -29,7 +29,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.16.0";
+const VERSION = "0.16.1";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -142,7 +142,7 @@ const STYLE = `
     display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: center; justify-content: space-between;
     color: var(--lcd-soft); font: 18px/1.5 var(--fm); letter-spacing: .04em; min-height: 128px;
   }
-  .lcd .l1 { color: var(--lcd-hi); font-size: 17px; line-height: 1.4; display: flex; flex-wrap: wrap; gap: 0 .6em; text-transform: uppercase; }
+  .lcd .l1 { color: var(--lcd-hi); font-size: 13px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; }
   .lcdlink { color: var(--lcd-soft); }
   .dots { --dot: 18px; display: grid; grid-template-columns: repeat(var(--cols, 8), var(--dot)); gap: 9px; flex: none; }
   .dot { width: var(--dot); height: var(--dot); border-radius: 50%; background: var(--lcd-dim); }
@@ -514,7 +514,7 @@ class EngineeringConsoleCard extends HTMLElement {
             <section class="module summary" aria-label="Summary">
               <div class="mhead"><h2 class="mtitle">${esc(scope)}</h2><span class="mmeta">Lights</span></div>
               <div class="lcd" role="img" data-lcdlabel>
-                <div class="l1"><span data-lcdstatus></span><span class="lcdlink">// <span data-linktext></span></span></div>
+                <div class="l1">STATUS: NOMINAL <span class="lcdlink">// <span data-linktext></span></span></div>
                 <div class="dots" data-dots aria-hidden="true"></div>
               </div>
               ${model.readings.map((r) => `
@@ -715,7 +715,6 @@ class EngineeringConsoleCard extends HTMLElement {
     }
     const verdict = faults.length ? `Status: ${faults.length} fault${faults.length > 1 ? "s" : ""}` : "Status: nominal";
     set("[data-verdict]", verdict);
-    set("[data-lcdstatus]", verdict);
     const allOn = model.all.filter((l) => this._state(l.id).on).length;
     set("[data-linktext]", `LINK OK · ${allOn} ON`);
     this._tick();
