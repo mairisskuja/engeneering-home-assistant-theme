@@ -29,7 +29,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.13.0";
+const VERSION = "0.13.1";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -142,13 +142,17 @@ const STYLE = `
     color: var(--lcd-soft); font: 18px/1.5 var(--fm); letter-spacing: .04em; min-height: 128px;
   }
   .lcd .l1 { color: var(--lcd-hi); font-size: 22px; }
-  .dots { display: grid; grid-template-columns: repeat(var(--cols, 8), 11px); gap: 5px; flex: none; margin-left: auto; }
-  .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--lcd-dim); }
-  .dot.on { background: var(--lcd-hi); box-shadow: 0 0 5px var(--lcd-hi); }
-  .dot.na { background: transparent; box-shadow: inset 0 0 0 1.5px #7a3b2a; }
+  .dots { --dot: 18px; display: grid; grid-template-columns: repeat(var(--cols, 8), var(--dot)); gap: 9px; flex: none; }
+  .dot { width: var(--dot); height: var(--dot); border-radius: 50%; background: var(--lcd-dim); }
+  .dot.on { background: var(--lcd-hi); box-shadow: 0 0 7px var(--lcd-hi); }
+  .dot.na { background: transparent; box-shadow: inset 0 0 0 2px #7a3b2a; }
+  /* ALL module: the LCD fills the module height, title on top, matrix centred below */
+  .module.summary { display: flex; flex-direction: column; }
+  .summary .lcd { flex: 1; flex-direction: column; flex-wrap: nowrap; align-items: stretch; }
+  .summary .dots { margin: auto; }
   /* Blinkenlights frames: lit and trailing dots */
   .dots.anim .dot:not(.settled) { background: var(--lcd-dim); box-shadow: none; }
-  .dots.anim .dot.b1 { background: var(--lcd-hi); box-shadow: 0 0 6px var(--lcd-hi); }
+  .dots.anim .dot.b1 { background: var(--lcd-hi); box-shadow: 0 0 8px var(--lcd-hi); }
   .dots.anim .dot.b2 { background: #9a4418; }
 
   /* Knobs */
