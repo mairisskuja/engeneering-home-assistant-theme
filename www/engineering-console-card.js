@@ -29,7 +29,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.17.2";
+const VERSION = "0.17.3";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -470,10 +470,12 @@ class EngineeringConsoleCard extends HTMLElement {
 
   _shortName(name, areaId) {
     // Drop a leading "<area> / " style prefix; the module already names the area.
+    // Only strip the area as a whole word followed by a separator, so
+    // "Ieejas gaisma" in area "Ieeja" stays intact.
     const area = this._hass.areas?.[areaId]?.name;
-    let n = name;
-    if (area && n.toLowerCase().startsWith(area.toLowerCase())) n = n.slice(area.length);
-    n = n.replace(/^[\s/:\-–]+/, "").trim();
+    if (!area) return name;
+    const escaped = area.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const n = name.replace(new RegExp(`^${escaped}(\\s*[/:\\-–]\\s*|\\s+)`, "i"), "").trim();
     return n || name;
   }
 

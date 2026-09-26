@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.27 (2026-09-27)
+
+- Console card 0.17.3: fix — the area prefix is stripped from light names only when the area name is a whole word followed by a separator (`/`, `:`, `-`, `–` or a space). Before, "Virtuves Led" in area "Virtuve" showed as "S LED" and "Ieejas gaisma" in "Ieeja" as "S GAISMA".
+- Reference instance: all lights renamed to short Latvian names per area (see HANDOVER §7).
+
 ## 0.3.26 (2026-09-27)
 
 - Console card 0.17.2: real toggle fix. `box-sizing: border-box` didn't apply to pseudo-elements, so the 28 px knob plus its 2 px border rendered 32 px wide inside a 34 px track, overflowing 1 px at the bottom and overlapping the right edge when on. `*::before` and `*::after` now use border-box, and the pill drops the native button `appearance`. Measured in the browser: 3 px gap on every side in both states.
