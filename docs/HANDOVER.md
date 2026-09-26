@@ -140,7 +140,7 @@ These aren't part of this repo, but they exist on the instance where the theme w
   - Note: two entities are now named "Master guļamistaba" (the ALPSTUGA 2 sensor shown on the dashboard, and `alpstuga_air_quality_moni_temperature_sensor`, which is hidden there).
   - Koridors lights renamed via the entity registry (entity ids unchanged): `light.light_10`…`light_13` → "Griesti 1"…"Griesti 4", `light.light_8` → "Griesti 5", `light.light_9` → "Griesti 6".
   - Maira birojs lights renamed (entity ids unchanged): `light.light_16` → "Griesti 1", `light.light_15` → "Griesti 2", `light.light_14` → "Griesti 3" (the "Mairis Office" prefix was dropped; the numbers were kept).
-  - `light.living_room_divans` renamed "Living room / Dīvāns" → "Dīvāna stāvlampa".
+  - `light.living_room_divans` renamed "Living room / Dīvāns" → "Dīvāns" (briefly "Dīvāna stāvlampa").
   - `light.virtuve_griesti_2` renamed "Virtuve / Griesti 2" → "Griesti" (its device is in the Dzīvojamā zona area).
   - `light.virtuve_griesti_1` renamed "Virtuve / Griesti 1" → "Griesti" (Virtuve area).
   - `light.kitchen_cabinets` renamed "Kitchen Cabinets" → "Virtuves Led".
