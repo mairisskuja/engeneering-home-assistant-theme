@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.16 (2026-09-26)
+
+- Console card 0.12.0:
+  - **Humidity readings** under the LCD, next to CO₂. The CO₂ block was refactored into a shared `READINGS` table (CO₂ and humidity) with one render, update and click path. Humidity rows borrow the name and order of the temperature sensor on the same device; new options `humidity` and `humidity_exclude`.
+  - Removed the corner crosshair marks, and the grid lines between modules are now a faint `--grid` colour (light `#c9c6bf`, dark `#2c3035`), 1 px. Keycap and tag outlines keep `--rule`.
+- Lights dashboard: `humidity_exclude` mirrors the temperature choice for the ALPSTUGA air-quality monitor.
+
 ## 0.3.15 (2026-09-26)
 
 - Console card 0.11.0: CO₂ block under the LCD in the ALL module. It auto-discovers `device_class: carbon_dioxide` sensors, colours the LED by level (green < 800, amber 800–1200, red > 1200 ppm), shows a bar and the value, and opens more-info on click. New options `co2` and `co2_exclude`; `hide_unavailable` also applies. New mode-aware `--warn` colour (3.62:1 light, 10.12:1 dark). Verified with simulated sensors in the browser.
