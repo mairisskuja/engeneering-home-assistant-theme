@@ -138,6 +138,7 @@ These aren't part of this repo, but they exist on the instance where the theme w
     - `tado_smart_thermostat_su0131611904_current_temperature` → "Tado dzīvojamā istaba"
     - `alpstuga_2_master_bedroo_temperature_sensor` → "Master guļamistaba"
   - Note: two entities are now named "Master guļamistaba" (the ALPSTUGA 2 sensor shown on the dashboard, and `alpstuga_air_quality_moni_temperature_sensor`, which is hidden there).
+  - Koridors lights renamed via the entity registry (entity ids unchanged): `light.light_10`…`light_13` → "Griesti 1"…"Griesti 4", `light.light_8` → "Griesti 5", `light.light_9` → "Griesti 6".
   - The Lights dashboard excludes `sensor.smart_kettle_55b1_temperature` and `sensor.alpstuga_air_quality_moni_temperature_sensor` via `temperature_exclude`.
   - The legacy tado zone **Chillspot**: its 8 entities were removed from the entity registry. The device itself remains (disabled), because the tado integration doesn't support device removal. To remove it completely, delete the Chillspot zone in the tado app. If tado recreates the entities on reload, they'll be disabled and won't appear on dashboards.
   - Registry backups: `core.*_registry.pre-chillspot.<timestamp>`.
