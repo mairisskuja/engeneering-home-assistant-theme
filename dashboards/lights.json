@@ -24,8 +24,8 @@
           ],
           "temperature_order": [
             "sensor.alpstuga_2_master_bedroo_temperature_sensor",
-            "sensor.main_room_main_room_temperature",
             "sensor.tado_smart_thermostat_su0131611904_current_temperature",
+            "sensor.main_room_main_room_temperature",
             "sensor.air_sensor_1_temperature_sensor",
             "sensor.iconic_home_ara_temperatura",
             "..."
