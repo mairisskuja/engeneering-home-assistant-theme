@@ -1,65 +1,65 @@
 # Engineering Theme for Home Assistant
 
-A Home Assistant theme built on an accessibility-first foundation, with SF typography, a WCAG 2.2 AA contrast gate and scripted deploys. A completely new visual design is being built on top of it.
+An industrial control-panel theme for Home Assistant: graphite or light-grey panels, square edges, a safety-orange accent and explicit status colours. Its typography is inspired by [teenage.engineering](https://teenage.engineering/). It has dark and light modes, both checked against WCAG 2.2 AA.
 
 > [!IMPORTANT]
 > **This theme is a fork of [Iconic Theme](https://github.com/mairisskuja/iconic-home-assistant-theme)**, which is itself **a fork of [ruudmens/home-assistant-dashboard](https://github.com/ruudmens/home-assistant-dashboard)** by Rudy Mens ([LazyAdmin.nl](https://lazyadmin.nl/smart-home/home-assistant-dashboard/)), specifically its `luxury_dashboard` theme.
 >
 > Both forks were built in an **AI-accelerated development style with [Claude Code](https://claude.com/claude-code)**, with a gazillion changes along the way. Many thanks to Rudy for the original design, which was in turn inspired by [Handj on Dribbble](https://dribbble.com/shots/20757344-Smart-Home-Concept-Design-originality).
 
-> [!NOTE]
-> **Status: freshly forked.** The theme currently looks the same as Iconic Theme 1.1.0 (charcoal and gold); only its identifiers differ, so both can be installed side by side. The new Engineering design will replace the palette below. See [docs/HANDOVER.md](docs/HANDOVER.md).
-
 ## Highlights
 
-- **Apple SF typography everywhere**: SF Pro Text for body text, SF Pro Display for headings and SF Mono for code, via the system font stack. Nothing is downloaded. A small companion module (`www/theme-fonts.js`) also covers the places where Home Assistant hardcodes Roboto: the sidebar and page base font, chart labels, code editor and input chips.
-- **Accessible by default**: every text and UI colour pair meets WCAG 2.2 AA, enforced by a contrast checker that runs before each deploy (69 checks, including every code-editor syntax colour), and verified in a live browser scan of the rendered UI.
-- **A proper dark theme**: all colours sit under `modes: dark:`, so Home Assistant's own dark base styles every form, dropdown, menu and dialog. No more white-on-white labels.
-- **Gold everywhere**: a full `ha-color-primary-*` ramp, so switches, buttons, links and focus rings follow the theme instead of falling back to Home Assistant blue.
-- **Clear state colours**: off is warm grey, on is gold, so state never depends on icon position alone.
+- **Control-panel look**: flat panels with 1px edges and 2–4px corners, no drop shadows, and a graphite neutral scale shared by menus, dialogs and switches.
+- **Dark and light modes**: the theme follows the device setting, or you can choose Auto, Light or Dark per user in the profile.
+- **teenage.engineering-style type, with free fonts**, self-hosted so wall tablets need no internet:
+  - Hanken Grotesk for UI text (stands in for TE's Univers Next);
+  - Syncopate wide caps for page, section, card and dialog titles (stands in for TE's TechnoType);
+  - IBM Plex Mono for code.
+- **Accessible in both modes**: 166 WCAG 2.2 AA contrast checks run before every deploy, including every code-editor syntax colour. The live UI was also scanned in a browser.
+- **Orange is used deliberately**: bright orange appears only as a fill with dark text on it. Anywhere orange is text in light mode, it's the dark `#a34405`.
 
 ## Palette
 
-| Role | Colour | Contrast |
+| Role | Dark | Light |
 |---|---|---|
-| Page background | `#211f1f` | — |
-| Cards, header surfaces | `#2c292a` | — |
-| Inputs, dropdowns | `#363233` | — |
-| Primary text | `#ffffff` | 14.41:1 on cards |
-| Secondary text, off-state icons | `#c2bbb3` | 7.58:1 on cards |
-| Accent / active / selected | `#eac578` | 8.75:1 on cards |
-| Links, focus ring | `#d4ad5c` | 6.81:1 on cards |
-| Text on gold fills | `#211f1f` | 9.96:1 on gold |
+| Page | `#16181b` | `#e4e5e2` |
+| Panels (cards) | `#1f2226` | `#f4f4f1` |
+| Inputs and pickers | `#2a2e33` | `#ffffff` |
+| Text | `#eceff2` (13.84:1) | `#16181b` (16.14:1) |
+| Secondary text, off-state | `#a9b0b8` (7.29:1) | `#4b5157` (7.29:1) |
+| Accent as text or link | `#ff7a1a` (6.12:1) | `#a34405` (5.63:1) |
+| Accent fill (with `#16181b` text) | `#ff7a1a` (6.82:1) | `#df600c` (4.93:1) |
+| Input outline | `#7d858e` | `#767c83` |
+| Success / warning / error / info | `#3ecf6e` `#ffc53d` `#ff6b6b` `#4cc3ff` | `#1d7a3c` `#8a5a00` `#c42b2b` `#0b6aa2` |
+
+Ratios are measured against the panel colour. Card edges (`#3a3f45` / `#c3c6c8`) are decorative, so WCAG doesn't require them to reach 3:1. Input outlines do reach it.
 
 ## Requirements
 
-- Home Assistant **2026.9.x** (tested on Core 2026.9.3 with frontend 20260826.7). Older releases may not know the `ha-color-*` and `ha-slider-*` variables. The theme still loads there, but switches and buttons fall back to default colours.
+- Home Assistant **2026.9.x** (tested on Core 2026.9.3 with frontend 20260826.7).
 - `frontend: themes: !include_dir_merge_named themes` in `configuration.yaml`.
+- The font bridge (`www/`) for the custom fonts and title styling. Without it the theme still works, but it falls back to system fonts, and the page base font and titles stay Roboto.
 
 ## Installation
 
-### Option A: HACS
+### Option A: HACS + font bridge
 
 1. In HACS, go to **⋮ → Custom repositories**, add `https://github.com/mairisskuja/engeneering-home-assistant-theme` and choose the **Theme** type.
-2. Install **Engineering Theme**.
-3. Run the `frontend.reload_themes` action, or restart Home Assistant.
-4. HACS installs only the theme file. For SF in the sidebar, charts and code editor, also install the font bridge (steps 3 and 4 of Option B).
+2. Install **Engineering Theme**. HACS only installs the theme file.
+3. Copy the repository's `www/` folder to `/config/www/engineering-theme/`, then follow steps 3 and 4 of Option B.
 
 ### Option B: manual
 
-1. Copy `themes/engineering_theme.yaml` to `/config/themes/` on your Home Assistant instance.
-2. Make sure `configuration.yaml` contains:
-   ```yaml
-   frontend:
-     themes: !include_dir_merge_named themes
-   ```
-3. Copy `www/theme-fonts.js` to `/config/www/engineering-theme/theme-fonts.js` and load it on every page:
+1. Copy `themes/engineering_theme.yaml` to `/config/themes/`.
+2. Copy the contents of `www/` (the file `theme-fonts.js` and the folder `fonts/`) to `/config/www/engineering-theme/`.
+3. In `configuration.yaml`:
    ```yaml
    frontend:
      themes: !include_dir_merge_named themes
      extra_module_url:
        - /local/engineering-theme/theme-fonts.js
    ```
+   Load only **one** font bridge. This one also covers Iconic Theme, so if you used Iconic's `iconic-fonts.js`, replace it with this one.
 4. Restart Home Assistant Core. `extra_module_url` is only read at startup; later theme edits only need `frontend.reload_themes`.
 
 ### Option C: scripted over SSH
@@ -70,74 +70,83 @@ With the *Terminal & SSH* add-on running, a network port set and your key author
 HA_HOST=root@homeassistant.local ./scripts/deploy.sh
 ```
 
-This runs the contrast check, backs up the current theme on the host, copies the theme and the font bridge, validates the config, reloads themes and confirms that Home Assistant loaded the theme in dark mode. It warns if `configuration.yaml` doesn't load the font bridge yet. Add the `extra_module_url` entry from Option B and restart Core once.
+The script:
+1. runs the contrast check;
+2. backs up the current theme on the host;
+3. copies the theme, font bridge and fonts;
+4. validates the config and reloads themes;
+5. confirms that Home Assistant loaded both modes.
+
+It warns if the font bridge isn't registered, or if a second bridge is also loaded.
 
 ### Activate
 
-Open your **Profile → Theme** and choose `engineering_theme`, then hard-refresh the browser (Cmd+Shift+R / Ctrl+Shift+R). To make it the default for everyone, add this action to an automation that runs at Home Assistant start:
+Open your **Profile → Theme**, choose `engineering_theme` and pick **Auto**, **Light** or **Dark**. Then hard-refresh (Cmd+Shift+R / Ctrl+Shift+R). To set it for everyone, add this action to an automation that runs at Home Assistant start:
 
 ```yaml
 action: frontend.set_theme
 data:
   name: engineering_theme
-  mode: dark
 ```
 
 ## Fonts
 
-Apple's licence does not allow SF fonts to be self-hosted on the web, so the theme uses whatever font is installed on the device:
+teenage.engineering uses licensed Univers Next cuts and its own TechnoType, which can't be redistributed. This theme ships free lookalikes, chosen by comparing them side by side with TE's own webfonts:
 
-| Device | Rendered font |
+| Role | TE original | Used here | Licence |
+|---|---|---|---|
+| UI text | Univers Next (`te-20` / `te-40`) | **Hanken Grotesk** 300–700 | SIL OFL 1.1 |
+| Titles | TechnoType (wide caps) | **Syncopate** 400/700 | Apache 2.0 |
+| Code | — | **IBM Plex Mono** 300–600 | SIL OFL 1.1 |
+
+The fonts are self-hosted from `www/fonts/` and include the Latin and Latin Extended character sets, so Latvian and other European accented letters (ā, č, ē, ģ, ī, ķ, ļ, ņ, š, ū, ž) are covered. Each font's licence file is next to it.
+
+### Where the fonts are applied
+
+| Source | What it covers |
 |---|---|
-| macOS, iOS, iPadOS (Safari and Chrome) | SF Pro / SF Mono |
-| Android, including most wall tablets | Roboto |
-| Windows | Segoe UI / Consolas |
-| Linux | `system-ui` default |
+| Theme variables | Almost everything: `ha-font-family-*`, `wa-font-family-*`, `mdc-typography-font-family`, `md-ref-typeface-*`, `ha-card-header-font-family`, legacy `paper-font-*` |
+| Font bridge `www/theme-fonts.js` | Loads `fonts/fonts.css`; points the places HA hardcodes Roboto at the theme fonts (page base font and sidebar, chart labels, code editor, input chips); and applies `--theme-label-font-family` to page titles, dashboard section headings and dialog titles |
 
-### Where the font is set
-
-| Source | What it covers | How |
-|---|---|---|
-| Theme variables | Almost everything: `ha-font-family-*`, `wa-font-family-*`, `mdc-typography-font-family`, `md-ref-typeface-*`, legacy `paper-font-*` | `themes/engineering_theme.yaml` |
-| Font bridge | Places Home Assistant hardcodes Roboto: base page font (sidebar), ECharts canvas labels, code editor text and search/autocomplete, input chips | `www/theme-fonts.js` |
-
-The bridge doesn't hardcode SF. It points those places at the active theme's `--ha-font-family-body` and `--ha-font-family-code`, so other themes keep their own fonts.
-
-If you need an identical look everywhere, self-host [Inter](https://rsms.me/inter/) (free, open licence, designed to closely resemble SF) and add `Inter` after `system-ui` in the four `ha-font-family-*` variables.
+The bridge doesn't hardcode any font. It follows the active theme's variables, so other themes keep their own fonts.
 
 ## Accessibility
 
-Target: **WCAG 2.2 AA**. The requirements are 4.5:1 for text (1.4.3) and 3:1 for UI components such as tracks, borders, focus rings and state icons (1.4.11).
+Target: **WCAG 2.2 AA**, meaning 4.5:1 for text (1.4.3) and 3:1 for UI components such as input outlines, switch outlines and knobs, slider tracks, focus rings and state icons (1.4.11).
 
 ```bash
 python3 scripts/contrast_check.py
 ```
 
-It reads the colours straight from the theme file and exits non-zero on any failure. See [CHANGELOG.md](CHANGELOG.md) for the list of accessibility issues fixed relative to the upstream theme.
+It reads both mode blocks from the theme file. Where the theme doesn't override one of Home Assistant's colour tokens, it checks the colour HA actually uses for that token in each mode. It exits non-zero on any failure. See [CHANGELOG.md](CHANGELOG.md) for what was checked in the browser.
 
 ## Repository layout
 
 ```
-themes/engineering_theme.yaml    The theme
-www/theme-fonts.js         Font bridge for the spots HA hardcodes Roboto (extra_module_url)
-scripts/contrast_check.py   WCAG contrast gate (local, no dependencies)
-scripts/deploy.sh           SSH deploy: check, back up, copy, reload, verify
-scripts/verify_theme.py     Runs on the HA host; confirms the theme loaded in dark mode
-docs/HANDOVER.md            Project state, decisions and open items for the next maintainer
-CHANGELOG.md                What changed relative to upstream
-hacs.json                   HACS metadata
+themes/engineering_theme.yaml   The theme (dark + light)
+www/theme-fonts.js              Font bridge (frontend.extra_module_url)
+www/fonts/                      Self-hosted fonts, fonts.css and licences
+scripts/contrast_check.py       WCAG gate for both modes (no dependencies)
+scripts/deploy.sh               SSH deploy: check, back up, copy, reload, verify
+scripts/verify_theme.py         Runs on the HA host; confirms both modes loaded
+docs/HANDOVER.md                Project state, decisions and open items
+CHANGELOG.md                    History, including inherited Iconic entries
+NOTICE                          Upstream MIT notices
+hacs.json                       HACS metadata
 ```
 
 ## Customising
 
-- Change colours in `themes/engineering_theme.yaml` under `modes: dark:`, **not** at the top level. Top-level colours bypass dark mode and bring back the white-on-white bug.
-- If you change the gold, regenerate the whole `ha-color-primary-05…95` ramp and keep `-60` at 4.5:1 or more against the card background.
+- Put colours under `modes: dark:` **and** `modes: light:`. Top-level keys apply to both modes; use them only for fonts, geometry and the neutral grey scale.
+- In light mode, keep `primary-color` dark enough to use as text. Home Assistant uses it as a text colour for tabs, links and the selected sidebar item.
 - Run `scripts/contrast_check.py` after every colour change.
 
 ## Credits and licence
 
 - Original theme and dashboard design: [Rudy Mens / LazyAdmin.nl](https://github.com/ruudmens/home-assistant-dashboard), MIT.
-- Iconic Theme (SF typography, accessibility rework, tooling): [Mairis Skuja [Iconic FAB]](https://github.com/mairisskuja/iconic-home-assistant-theme), MIT.
+- Iconic Theme (accessibility rework, font bridge, tooling): [Mairis Skuja [Iconic FAB]](https://github.com/mairisskuja/iconic-home-assistant-theme), MIT.
 - Engineering Theme: Mairis Skuja, built with [Claude Code](https://claude.com/claude-code).
+- Fonts: Hanken Grotesk (© 2021 The Hanken Grotesk Project Authors, OFL), Syncopate (© 2010 Astigmatic, Apache 2.0), IBM Plex Mono (© 2017 IBM Corp., OFL).
+- Visual inspiration: [teenage.engineering](https://teenage.engineering/). This project isn't affiliated with or endorsed by teenage engineering, and it doesn't include any of their fonts or assets.
 
-This repository is released under the [GNU GPL v3.0](LICENSE). It incorporates MIT-licensed work from the projects above; their copyright and permission notices are kept in [NOTICE](NOTICE), as the MIT licence requires.
+This repository is released under the [GNU GPL v3.0](LICENSE). It incorporates MIT-licensed work from the projects above; their notices are kept in [NOTICE](NOTICE). The font licences are in `www/fonts/`.

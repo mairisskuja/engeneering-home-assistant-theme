@@ -1,146 +1,282 @@
 # Engineering Theme
 # Forked from Iconic Theme (mairisskuja/iconic-home-assistant-theme),
 # itself a fork of luxury_dashboard (ruudmens/home-assistant-dashboard).
-# Uses Apple's SF font family via the system font stack: SF Pro on Apple
-# devices, with native fallbacks elsewhere (SF is not licensed for web
-# hosting, so it is never downloaded).
 #
-# Accessibility (WCAG 2.2 AA, checked against HA frontend 20260826.7):
-# - Colours live under `modes: dark:`. Without it HA treats the theme as a
-#   light theme and keeps light form/menu/dialog surfaces under white text.
-# - Text >= 4.5:1, UI component boundaries (tracks, borders, focus) >= 3:1.
-# - Text on gold fills is dark; white on #eac578 is only 1.65:1.
-# - Off and on states differ in colour, not just in position.
+# Direction: industrial control panel. Graphite (dark) or light-grey (light)
+# panels, square edges, safety-orange accent, explicit status colours.
+# Type imitates teenage.engineering with free fonts (self-hosted via
+# www/theme-fonts.js): Hanken Grotesk (Univers-like UI), Syncopate
+# (TechnoType-like wide caps for headings), IBM Plex Mono (readouts, code).
+#
+# Accessibility (WCAG 2.2 AA, checked against HA frontend 20260826.7 by
+# scripts/contrast_check.py for BOTH modes):
+# - Text >= 4.5:1, UI component boundaries (inputs, tracks, focus) >= 3:1.
+# - Card edges are decorative and exempt; input outlines are not.
+# - Light mode uses dark orange (#a34405) wherever orange is text; bright
+#   orange appears only as a fill with dark text on it.
 engineering_theme:
-  # Font: SF Pro (text + display) and SF Mono
-  ha-font-family-body: &sf-pro '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Helvetica Neue", Roboto, "Segoe UI", sans-serif'
-  ha-font-family-heading: &sf-pro-display '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, "Helvetica Neue", Roboto, "Segoe UI", sans-serif'
-  ha-font-family-longform: *sf-pro
-  ha-font-family-code: &sf-mono 'ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace'
-  primary-font-family: *sf-pro
-  paper-font-common-base_-_font-family: *sf-pro
-  paper-font-common-code_-_font-family: *sf-mono
-  paper-font-body1_-_font-family: *sf-pro
-  paper-font-subhead_-_font-family: *sf-pro
-  paper-font-headline_-_font-family: *sf-pro-display
-  paper-font-caption_-_font-family: *sf-pro
-  paper-font-title_-_font-family: *sf-pro-display
+  # Typography
+  ha-font-family-body: &body '"Hanken Grotesk", -apple-system, BlinkMacSystemFont, system-ui, "Helvetica Neue", Roboto, "Segoe UI", sans-serif'
+  ha-font-family-heading: &heading 'Syncopate, "Hanken Grotesk", -apple-system, BlinkMacSystemFont, system-ui, sans-serif'
+  ha-font-family-longform: *body
+  ha-font-family-code: &mono '"IBM Plex Mono", ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace'
+  primary-font-family: *body
+  paper-font-common-base_-_font-family: *body
+  paper-font-common-code_-_font-family: *mono
+  paper-font-body1_-_font-family: *body
+  paper-font-subhead_-_font-family: *body
+  paper-font-headline_-_font-family: *heading
+  paper-font-caption_-_font-family: *body
+  paper-font-title_-_font-family: *heading
   # Material (mdc/md3) and Web Awesome components default to Roboto
-  mdc-typography-font-family: *sf-pro
-  md-ref-typeface-plain: *sf-pro
-  md-ref-typeface-brand: *sf-pro-display
-  wa-font-family-body: *sf-pro
-  wa-font-family-heading: *sf-pro-display
-  wa-font-family-longform: *sf-pro
-  wa-font-family-code: *sf-mono
+  mdc-typography-font-family: *body
+  md-ref-typeface-plain: *body
+  md-ref-typeface-brand: *heading
+  wa-font-family-body: *body
+  wa-font-family-heading: *heading
+  wa-font-family-longform: *body
+  wa-font-family-code: *mono
+  # TE-style wide-caps labels: card headers (native HA variable) and, via
+  # www/theme-fonts.js, page titles, dashboard section headings, dialog titles
+  ha-card-header-font-family: *heading
+  theme-label-font-family: *heading
   # Places HA hardcodes Roboto are covered by www/theme-fonts.js
 
-  # Cards
-  ha-card-border-radius: "16px"
-  ha-card-box-shadow: "0 4px 24px rgba(0, 0, 0, 0.3)"
+  # Geometry: square panels, flat, 1px edges
+  ha-card-border-radius: "3px"
+  ha-card-border-width: "1px"
+  ha-card-box-shadow: "none"
+  ha-border-radius-sm: "2px"
+  ha-border-radius-md: "3px"
+  ha-border-radius-lg: "4px"
+  ha-border-radius-xl: "4px"
+  ha-border-radius-2xl: "6px"
+  ha-border-radius-3xl: "6px"
+  ha-border-radius-4xl: "6px"
+  ha-border-radius-5xl: "6px"
+  ha-border-radius-6xl: "6px"
+  ha-border-radius-pill: "4px"
+
+  # Graphite neutral ramp, shared by both modes. Replaces HA's cool greys so
+  # menus, dialogs and off-state switches match the panels. Switch outline:
+  # dark reads neutral-50, light reads neutral-60 (both >= 3:1 vs card).
+  ha-color-neutral-05: "#0f1113"
+  ha-color-neutral-10: "#1f2226"
+  ha-color-neutral-20: "#2a2e33"
+  ha-color-neutral-30: "#3a3f45"
+  ha-color-neutral-40: "#50565d"
+  ha-color-neutral-50: "#6b737b"
+  ha-color-neutral-60: "#767c83"
+  ha-color-neutral-70: "#a9b0b8"
+  ha-color-neutral-80: "#c3c6c8"
+  ha-color-neutral-90: "#e4e5e2"
+  ha-color-neutral-95: "#f4f4f1"
 
   # Lovelace card mod
   card-mod-theme: engineering_theme
 
   modes:
     dark:
-      # Gold ramp; switches, buttons, links and focus rings read these
-      ha-color-primary-05: "#1d170c"
-      ha-color-primary-10: "#2e2410"
-      ha-color-primary-20: "#4a3916"
-      ha-color-primary-30: "#6b521c"
-      ha-color-primary-40: "#7d5f1c"
-      ha-color-primary-50: "#b08a3a"
-      ha-color-primary-60: "#d4ad5c"
-      ha-color-primary-70: "#eac578"
-      ha-color-primary-80: "#f2d9a6"
-      ha-color-primary-90: "#f8ebcf"
-      ha-color-primary-95: "#fcf5e7"
+      # Safety-orange ramp; switches, buttons, links and focus rings read these
+      ha-color-primary-05: "#1f0f02"
+      ha-color-primary-10: "#331803"
+      ha-color-primary-20: "#552705"
+      ha-color-primary-30: "#7a3806"
+      ha-color-primary-40: "#a34405"
+      ha-color-primary-50: "#df600c"
+      ha-color-primary-60: "#ff7a1a"
+      ha-color-primary-70: "#ff9a4d"
+      ha-color-primary-80: "#ffbd8a"
+      ha-color-primary-90: "#ffe0c7"
+      ha-color-primary-95: "#fff0e3"
 
-      # Primary colors
-      primary-color: "#eac578"
-      light-primary-color: "#f2d9a6"
-      dark-primary-color: "#b08a3a"
-      accent-color: "#eac578"
+      primary-color: "#ff7a1a"
+      light-primary-color: "#ff9a4d"
+      dark-primary-color: "#df600c"
+      accent-color: "#ff7a1a"
+      text-primary-color: "#16181b"
+      text-light-primary-color: "#16181b"
+      text-accent-color: "#16181b"
 
-      # Text on gold fills (9.96:1)
-      text-primary-color: "#211f1f"
-      text-light-primary-color: "#211f1f"
-      text-accent-color: "#211f1f"
-      ha-color-on-primary-loud: "#211f1f"
+      # Filled buttons: orange with dark ink
+      ha-color-fill-primary-loud-resting: "#ff7a1a"
+      ha-color-fill-primary-loud-hover: "#ff9a4d"
+      ha-color-fill-primary-loud-active: "#ff7a1a"
+      ha-color-on-primary-loud: "#16181b"
+      ha-color-border-primary-loud: "#ff7a1a"
+      ha-color-focus: "#ff7a1a"
 
-      # Loud (filled) buttons: gold with dark text, 8.75:1 against cards
-      ha-color-fill-primary-loud-resting: "#eac578"
-      ha-color-fill-primary-loud-hover: "#f2d9a6"
-      ha-color-fill-primary-loud-active: "#eac578"
-      ha-color-border-primary-loud: "#d4ad5c"
-      ha-color-focus: "#d4ad5c"
+      # Panels
+      primary-background-color: "#16181b"
+      secondary-background-color: "#262a2f"
+      card-background-color: "#1f2226"
+      ha-card-background: "#1f2226"
+      ha-card-border-color: "#3a3f45"
+      divider-color: "#33383e"
 
-      # Background colors
-      primary-background-color: "#211f1f"
-      secondary-background-color: "#2c292a"
-      card-background-color: "#2c292a"
-      ha-card-background: "#2c292a"
+      # Text
+      primary-text-color: "#eceff2"
+      secondary-text-color: "#a9b0b8"
+      disabled-text-color: "#6b737b"
 
-      # Text colors
-      primary-text-color: "#ffffff"
-      secondary-text-color: "#c2bbb3"
-      disabled-text-color: "rgba(255, 255, 255, 0.5)"
+      # Status
+      success-color: "#3ecf6e"
+      warning-color: "#ffc53d"
+      error-color: "#ff6b6b"
+      info-color: "#4cc3ff"
 
-      # Header
-      app-header-background-color: "#211f1f"
-      app-header-text-color: "#ffffff"
+      # Header and sidebar
+      app-header-background-color: "#16181b"
+      app-header-text-color: "#eceff2"
+      sidebar-background-color: "#121417"
+      sidebar-text-color: "#eceff2"
+      sidebar-icon-color: "#a9b0b8"
+      sidebar-selected-background-color: "#262a2f"
+      sidebar-selected-text-color: "#ff7a1a"
+      sidebar-selected-icon-color: "#ff7a1a"
 
-      # Sidebar
-      sidebar-background-color: "#211f1f"
-      sidebar-text-color: "#ffffff"
-      sidebar-icon-color: "#c2bbb3"
-      sidebar-selected-background-color: "#3a3536"
-      sidebar-selected-text-color: "#eac578"
-      sidebar-selected-icon-color: "#eac578"
+      mdc-button-outline-color: "#7d858e"
 
-      # Buttons
-      mdc-button-outline-color: "#eac578"
-
-      # Dividers
-      divider-color: "rgba(255, 255, 255, 0.1)"
-
-      # States: off is neutral, on is gold
-      state-icon-color: "#c2bbb3"
-      state-icon-active-color: "#eac578"
+      # States: off is grey, on is orange
+      state-icon-color: "#a9b0b8"
+      state-icon-active-color: "#ff7a1a"
 
       # Sliders
-      ha-slider-thumb-color: "#eac578"
-      ha-slider-indicator-color: "#eac578"
-      ha-slider-track-color: "#8a827c"
+      ha-slider-thumb-color: "#ff7a1a"
+      ha-slider-indicator-color: "#ff7a1a"
+      ha-slider-track-color: "#6b737b"
 
-      # Inputs and dropdowns
-      input-fill-color: "#363233"
-      input-ink-color: "#ffffff"
-      input-label-ink-color: "#c2bbb3"
-      input-dropdown-icon-color: "#c2bbb3"
-      # Pickers and dropdown fields (HA default is cool grey #363636)
-      ha-color-form-background: "#363233"
-      ha-color-form-background-hover: "#403b3c"
-      ha-color-form-background-disabled: "#363233"
+      # Inputs, pickers, dropdowns
+      input-fill-color: "#2a2e33"
+      input-ink-color: "#eceff2"
+      input-label-ink-color: "#a9b0b8"
+      input-dropdown-icon-color: "#a9b0b8"
+      input-idle-line-color: "#7d858e"
+      input-outlined-idle-border-color: "#7d858e"
+      ha-color-form-background: "#2a2e33"
+      ha-color-form-background-hover: "#32373d"
+      ha-color-form-background-disabled: "#23262a"
 
-      # Code editor syntax. HA's dark defaults assume #1c1c1c; these clear
-      # 4.5:1 on the card (#2c292a) and on the highlighted active line.
-      codemirror-comment: "#aca59e"
-      codemirror-variable: "#f58a90"
-      codemirror-string-2: "#f58a90"
-      codemirror-number: "#ff8a9c"
-      codemirror-tag: "#ff8a9c"
-      codemirror-keyword: "#c792ea"
-      codemirror-operator: "#89ddff"
-      codemirror-variable-2: "#eeffff"
-      codemirror-variable-3: "#decb6b"
-      codemirror-builtin: "#ffcb6b"
-      codemirror-atom: "#f78c6c"
-      codemirror-def: "#82aaff"
-      codemirror-string: "#c3e88d"
-      codemirror-meta: "#ffcb6b"
-      codemirror-attribute: "#c792ea"
-      codemirror-property: "#c792ea"
-      codemirror-qualifier: "#decb6b"
-      codemirror-type: "#decb6b"
+      # Code editor (card #1f2226 and active line)
+      codemirror-comment: "#9aa1a9"
+      codemirror-keyword: "#c9a2ff"
+      codemirror-operator: "#7fd7ff"
+      codemirror-variable: "#ff8f8f"
+      codemirror-variable-2: "#eceff2"
+      codemirror-variable-3: "#ffd479"
+      codemirror-builtin: "#ffb870"
+      codemirror-atom: "#ff9a4d"
+      codemirror-number: "#ff9ec4"
+      codemirror-def: "#8cb4ff"
+      codemirror-string: "#8fe0a0"
+      codemirror-string-2: "#ff8f8f"
+      codemirror-tag: "#ff9ec4"
+      codemirror-meta: "#ffb870"
+      codemirror-attribute: "#c9a2ff"
+      codemirror-property: "#c9a2ff"
+      codemirror-qualifier: "#ffd479"
+      codemirror-type: "#ffd479"
+
+    light:
+      # Same hue; 40 is dark enough for text, 50 is the bright fill
+      ha-color-primary-05: "#1f0f02"
+      ha-color-primary-10: "#331803"
+      ha-color-primary-20: "#552705"
+      ha-color-primary-30: "#7a3806"
+      ha-color-primary-40: "#a34405"
+      ha-color-primary-50: "#df600c"
+      ha-color-primary-60: "#ff7a1a"
+      ha-color-primary-70: "#ff9a4d"
+      ha-color-primary-80: "#ffbd8a"
+      ha-color-primary-90: "#ffe0c7"
+      ha-color-primary-95: "#fff0e3"
+
+      # primary-color is used as TEXT in many places (tabs, links), so dark orange
+      primary-color: "#a34405"
+      light-primary-color: "#ffe0c7"
+      dark-primary-color: "#7a3806"
+      accent-color: "#a34405"
+      text-primary-color: "#ffffff"
+      text-light-primary-color: "#16181b"
+      text-accent-color: "#ffffff"
+
+      # Filled buttons: bright orange with dark ink (4.93:1), 3.28:1 vs card
+      ha-color-fill-primary-loud-resting: "#df600c"
+      ha-color-fill-primary-loud-hover: "#ea6a14"
+      ha-color-fill-primary-loud-active: "#df600c"
+      ha-color-on-primary-loud: "#16181b"
+      # HA's light default for plain/quiet buttons is primary-50 (3.28:1)
+      ha-color-on-primary-quiet: "#a34405"
+      ha-color-border-primary-loud: "#a34405"
+      ha-color-focus: "#a34405"
+
+      # Panels
+      primary-background-color: "#e4e5e2"
+      secondary-background-color: "#ebebe7"
+      card-background-color: "#f4f4f1"
+      ha-card-background: "#f4f4f1"
+      ha-card-border-color: "#c3c6c8"
+      divider-color: "#cdd0d2"
+
+      # Text
+      primary-text-color: "#16181b"
+      secondary-text-color: "#4b5157"
+      disabled-text-color: "#8a9096"
+
+      # Status
+      success-color: "#1d7a3c"
+      warning-color: "#8a5a00"
+      error-color: "#c42b2b"
+      info-color: "#0b6aa2"
+
+      # Header and sidebar
+      app-header-background-color: "#e4e5e2"
+      app-header-text-color: "#16181b"
+      sidebar-background-color: "#dcddd9"
+      sidebar-text-color: "#16181b"
+      sidebar-icon-color: "#4b5157"
+      sidebar-selected-background-color: "#f4f4f1"
+      sidebar-selected-text-color: "#a34405"
+      sidebar-selected-icon-color: "#a34405"
+
+      mdc-button-outline-color: "#767c83"
+
+      # States: off is grey, on is orange
+      state-icon-color: "#4b5157"
+      state-icon-active-color: "#a34405"
+
+      # Sliders
+      ha-slider-thumb-color: "#df600c"
+      ha-slider-indicator-color: "#df600c"
+      ha-slider-track-color: "#767c83"
+
+      # Inputs, pickers, dropdowns
+      input-fill-color: "#ffffff"
+      input-ink-color: "#16181b"
+      input-label-ink-color: "#4b5157"
+      input-dropdown-icon-color: "#4b5157"
+      input-idle-line-color: "#767c83"
+      input-outlined-idle-border-color: "#767c83"
+      ha-color-form-background: "#ffffff"
+      ha-color-form-background-hover: "#f0f0ec"
+      ha-color-form-background-disabled: "#ebebe7"
+
+      # Code editor (card #f4f4f1 and active line)
+      codemirror-comment: "#5f666e"
+      codemirror-keyword: "#6f2dbd"
+      codemirror-operator: "#0b6b8a"
+      codemirror-variable: "#b3261e"
+      codemirror-variable-2: "#2b3137"
+      codemirror-variable-3: "#6e5300"
+      codemirror-builtin: "#8a4b00"
+      codemirror-atom: "#a34405"
+      codemirror-number: "#9c2f5b"
+      codemirror-def: "#1f5fbf"
+      codemirror-string: "#2e6b1f"
+      codemirror-string-2: "#b3261e"
+      codemirror-tag: "#9c2f5b"
+      codemirror-meta: "#8a4b00"
+      codemirror-attribute: "#6f2dbd"
+      codemirror-property: "#6f2dbd"
+      codemirror-qualifier: "#6e5300"
+      codemirror-type: "#6e5300"

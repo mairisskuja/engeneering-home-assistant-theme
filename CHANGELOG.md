@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.2.0 (2026-09-26)
+
+The Engineering redesign: an industrial control-panel theme with dark and light modes and teenage.engineering-inspired type.
+
+### Design
+- New palette: graphite (dark) and light-grey (light) panels, safety-orange accent (`#ff7a1a` / `#df600c` fills, `#a34405` for text in light mode), explicit success, warning, error and info colours in each mode.
+- A full safety-orange `ha-color-primary-*` ramp and a graphite `ha-color-neutral-*` scale, so switches, menus and dialogs match the panels.
+- Flat geometry: 1px card edges, 2–6px corners (Home Assistant's defaults go up to 36px), no shadows, square-ish buttons.
+- Complete code-editor syntax palettes for both modes. HA's light defaults, such as `#F90` and `#8DA6CE`, fail on light backgrounds.
+
+### Typography
+- Chosen by comparing candidates side by side with TE's own webfonts:
+  - **Hanken Grotesk** for UI text (Univers Next lookalike);
+  - **Syncopate** for titles (TechnoType lookalike, wide caps);
+  - **IBM Plex Mono** for code.
+- Fonts are self-hosted in `www/fonts/` (Latin and Latin Extended, so Latvian is covered), with their OFL and Apache licences.
+- The font bridge now loads `fonts/fonts.css`, and applies an optional `--theme-label-font-family` to page titles, dashboard section headings and dialog titles. Those elements only inherit a font, so other themes are unaffected. Card headers use HA's native `ha-card-header-font-family`.
+
+### Accessibility
+- `contrast_check.py` now checks both modes, using HA's own per-mode token mapping wherever the theme doesn't override a token: 166 checks, all passing.
+- Light-mode traps found and fixed:
+  - `primary-color` is used as a text colour (tabs, links), so it's the dark orange;
+  - HA's plain/quiet buttons default to `primary-50`, which is only 3.28:1, so they're pinned to `#a34405`;
+  - the off-state switch outline from HA's grey scale was 2.62:1, and is now 3.83:1 via the graphite scale;
+  - the slider track was 2.93:1 and is now 3.83:1.
+- Browser scan in both modes (overview, profile, history chart) found zero failures. The template editor had zero failures in light mode; in dark mode it was checked visually only (see HANDOVER).
+
+### Tooling
+- `deploy.sh` copies `www/` recursively and warns if a second font bridge is loaded.
+- `verify_theme.py` requires both modes.
+
 ## 0.1.0 (2026-09-26)
 
 Forked from [Iconic Theme](https://github.com/mairisskuja/iconic-home-assistant-theme) 1.1.0 (itself forked from `luxury_dashboard` in [ruudmens/home-assistant-dashboard](https://github.com/ruudmens/home-assistant-dashboard)). Developed in an AI-accelerated style with Claude Code.

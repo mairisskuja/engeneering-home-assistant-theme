@@ -71,10 +71,11 @@ def main():
         sys.exit(f"{THEME} not loaded. Loaded themes: {', '.join(themes)}")
 
     modes = themes[THEME].get("modes", {})
-    if "dark" not in modes:
-        sys.exit(f"{THEME} has no modes.dark block; HA will render it as a light theme")
-    print(f"OK: {THEME} loaded, dark mode with {len(modes['dark'])} colour variables"
-          f"{', light mode present' if 'light' in modes else ', dark-only'}")
+    missing = {"dark", "light"} - set(modes)
+    if missing:
+        sys.exit(f"{THEME} is missing modes: {', '.join(sorted(missing))}")
+    print(f"OK: {THEME} loaded; dark mode {len(modes['dark'])} and "
+          f"light mode {len(modes['light'])} colour variables")
 
 
 if __name__ == "__main__":

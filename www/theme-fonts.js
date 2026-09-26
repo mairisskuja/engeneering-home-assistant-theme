@@ -8,10 +8,23 @@
 //   - code editor text (CodeMirror's generic monospace -> --ha-font-family-code)
 //   - input chips (--md-input-chip-label-text-font)
 //   - chart labels (ECharts draws on canvas with a fixed font string)
+// It also loads the self-hosted fonts and applies an optional
+// --theme-label-font-family to page, section and dialog titles.
 // With a theme that doesn't set a font, --ha-font-family-body is HA's own
 // Roboto stack, so this module changes nothing.
 
 const FONT_VAR = "var(--ha-font-family-body)";
+
+// Self-hosted theme fonts (Hanken Grotesk, Syncopate, IBM Plex Mono).
+// @font-face only downloads a file when text actually uses that family, so
+// this costs nothing while another theme is active.
+if (!document.getElementById("engineering-theme-fonts")) {
+  const link = document.createElement("link");
+  link.id = "engineering-theme-fonts";
+  link.rel = "stylesheet";
+  link.href = new URL("fonts/fonts.css", import.meta.url).href;
+  document.head.appendChild(link);
+}
 
 // Document level: beats the <style> block in index.html (adopted sheets come
 // later in the cascade).
@@ -26,6 +39,16 @@ shadowSheet.replaceSync(`
   .cm-textfield, .cm-completionDetail { font-family: ${FONT_VAR} !important; }
   .cm-scroller, .cm-tooltip-autocomplete > ul {
     font-family: var(--ha-font-family-code) !important;
+  }
+  /* Label font for titles that HA renders in the body font. These elements
+     only inherit a font, so the "inherit" fallback keeps other themes as-is. */
+  :host(hui-root) .main-title,
+  :host(hass-subpage) .main-title,
+  :host(hass-tabs-subpage) .main-title,
+  :host(ha-top-app-bar-fixed) .title,
+  :host(hui-heading-card) p,
+  :host(ha-dialog-header) .header-title {
+    font-family: var(--theme-label-font-family, inherit);
   }
 `);
 

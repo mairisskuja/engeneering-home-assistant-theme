@@ -4,20 +4,20 @@ State of the project as of **2026-09-26**, for whoever picks it up next.
 
 ## 1. What this is
 
-Engineering Theme is a Home Assistant frontend theme forked from [Iconic Theme](https://github.com/mairisskuja/iconic-home-assistant-theme) 1.1.0, which is itself a fork of `luxury_dashboard` in [ruudmens/home-assistant-dashboard](https://github.com/ruudmens/home-assistant-dashboard). It inherits Iconic's engineering: a dark-mode colour model, SF typography with a font bridge, a WCAG 2.2 AA contrast gate, and the deploy and verification scripts. It is meant to grow into a completely different visual design. Until that redesign lands it looks identical to Iconic Theme; only the identifiers differ, so both can be installed side by side.
+Engineering Theme is a Home Assistant frontend theme in an **industrial control-panel** style, with dark and light modes and teenage.engineering-inspired typography. It was forked from [Iconic Theme](https://github.com/mairisskuja/iconic-home-assistant-theme) 1.1.0, which is itself a fork of `luxury_dashboard` in [ruudmens/home-assistant-dashboard](https://github.com/ruudmens/home-assistant-dashboard). From Iconic it inherits the dark-mode model, the font bridge, the contrast gate and the deploy and verification scripts. The visual design (palette, geometry, type) is new.
 
-Development was AI-accelerated with Claude Code: source research against the HA frontend, contrast maths, the deploy and verification scripts, and these docs.
+Development was AI-accelerated with Claude Code: HA frontend source research, font research and comparison, contrast maths for both modes, live browser verification and these docs.
 
 ## 2. Current status
 
 | Item | Status |
 |---|---|
-| Theme file | Forked from Iconic 1.1.0; `themes/engineering_theme.yaml` (identical look for now) |
-| Contrast gate | 69/69 WCAG AA checks pass (`scripts/contrast_check.py`) |
-| Font bridge | `www/theme-fonts.js`, served at `/local/engineering-theme/theme-fonts.js` |
-| Deployed to the reference HA instance | **Not yet** |
-| New visual design | **Not started**; direction to be decided (see open items) |
-| HACS | `hacs.json` present; installable as a custom repository |
+| Theme | 0.2.0, `themes/engineering_theme.yaml`, with dark and light modes |
+| Contrast gate | 166/166 WCAG AA checks pass across both modes (`scripts/contrast_check.py`) |
+| Fonts | Self-hosted in `www/fonts/`, loaded by `www/theme-fonts.js` |
+| Deployed to the reference HA instance | Yes. Both modes are loaded (78 dark / 79 light colour variables), and the font bridge is registered at `/local/engineering-theme/theme-fonts.js` |
+| Browser QA (Chrome, macOS) | Overview, profile and history chart: zero contrast failures in both modes. Template editor: zero in light; dark checked visually only (see open item 1). Latvian glyphs confirmed in Syncopate. |
+| HACS | `hacs.json` present; installable as a custom repository (the font bridge is a manual step) |
 
 Reference environment: Home Assistant OS, Core **2026.9.3**, frontend **20260826.7**.
 
@@ -25,37 +25,50 @@ Reference environment: Home Assistant OS, Core **2026.9.3**, frontend **20260826
 
 These are the non-obvious facts, verified in the HA frontend source (`src/state/themes-mixin.ts`, `src/common/dom/apply_themes_on_element.ts`, `src/resources/theme/**`):
 
-1. **Dark vs light is decided by `modes`.** A theme without `modes.dark` is always rendered as **light**, whatever the user or OS prefers. HA then keeps its light base (`--input-fill-color`, menu and dialog surfaces, `--ha-color-*` semantic tokens) and only overlays your variables. That was the cause of the invisible labels and pull-downs. With only `modes.dark` present, HA forces dark mode and applies its full dark base underneath.
-2. **Top-level keys apply in every mode, and `modes.dark` keys win.** Fonts and radii live at the top level; every colour lives under `modes.dark`.
-3. **Custom themes do not get a generated primary palette.** HA only derives the `ha-color-primary-05…95` ramp from `primary-color` for its *default* theme. Switches, filled buttons, links and focus rings read that ramp, so the theme must define all eleven steps itself.
-4. **Dead variables.** `switch-checked-color`, `switch-unchecked-*` and `paper-slider-*` are no longer read by any component in 2026.9, so they were removed. Sliders use `ha-slider-thumb-color`, `ha-slider-indicator-color` and `ha-slider-track-color`.
-5. **Filled (loud) buttons** use `ha-color-fill-primary-loud-*` with text in `ha-color-on-primary-loud`. HA's default is white text on primary-40; the theme uses gold primary-70 with dark text, which passes both text and boundary contrast.
-6. **Hardcoded Roboto.** A few places ignore every theme variable: the `<body>` style in `index.html` (so the sidebar inherits Roboto), ECharts' canvas `textStyle`, CodeMirror's `.cm-textfield` and `.cm-completionDetail`, CodeMirror's generic `monospace`, and `ha-input-chip`. `www/theme-fonts.js` bridges them to `--ha-font-family-body` and `--ha-font-family-code`. It works by adopting a stylesheet into the document and every shadow root, wrapping the `ShadowRoot.adoptedStyleSheets` setter because Lit replaces the array, and wrapping each chart's `setOption`. It depends on frontend internals, so re-check it after each HA frontend upgrade (see section 5).
-7. **Code editor colours.** HA's dark `codemirror-*` defaults were designed for `#1c1c1c`. On the warmer `#2c292a` card, and on the active line (10% secondary text over the card), comments, variables, numbers and tags failed. All 18 tokens are now defined in the theme.
+1. **`modes` decides dark vs light.** No `modes.dark` means always light; only `modes.dark` means always dark; both means HA follows the user or device preference (Auto / Light / Dark in the profile). HA applies its own dark or light base first, then the theme's top-level keys, then the matching mode block.
+2. **Top-level keys apply in both modes.** Only mode-independent things live there: fonts, geometry and the graphite neutral scale. Everything else is inside each mode block.
+3. **Custom themes don't get a generated primary palette.** Switches, filled buttons, links and focus rings read `ha-color-primary-05…95`, so each mode defines all eleven steps.
+4. **HA maps the ramp differently per mode.** In dark mode, links use primary-60, the "normal" fill is primary-10 and quiet text is primary-70. In light mode, links use primary-40, the normal fill is primary-90 and quiet text is **primary-50**. That last one is too bright on a light card, so the light mode pins `ha-color-on-primary-quiet` to `#a34405`. `scripts/contrast_check.py` encodes this mapping (`HA_DEFAULTS`); update it if HA changes.
+5. **In light mode, `primary-color` is a text colour.** Tabs, links and the selected sidebar item paint text in `--primary-color`, so light mode uses the dark orange there. Bright orange appears only in the `ha-color-fill-primary-loud-*` fills, with dark ink on top.
+6. **The neutral scale drives off-state switches, menus and dialogs.** Dark mode draws the off-switch outline in `neutral-50` and light mode in `neutral-60`. HA's default greys gave 2.62:1 in light mode, and the graphite scale fixes that.
+7. **Dead variables.** `switch-*` and `paper-slider-*` are ignored in 2026.9. Sliders use `ha-slider-*`.
+8. **Font bridge (`www/theme-fonts.js`).** It:
+   - loads `fonts/fonts.css`, found relative to the script itself;
+   - points the spots HA hardcodes Roboto (the `<body>` base, so the sidebar; ECharts canvas labels; CodeMirror text, search and autocomplete; input chips) at `--ha-font-family-body` and `--ha-font-family-code`;
+   - applies `--theme-label-font-family` to `hui-root`, `hass-subpage` and `hass-tabs-subpage` `.main-title`, `ha-top-app-bar-fixed .title`, `hui-heading-card p` and `ha-dialog-header .header-title`.
+
+   Those title elements only inherit a font, so the `inherit` fallback leaves other themes unchanged. The script works by adopting a stylesheet into every shadow root (wrapping the `ShadowRoot.adoptedStyleSheets` setter, because Lit replaces the array) and by wrapping each chart's `setOption`. It depends on frontend internals, so re-check it after every HA frontend upgrade (section 5).
+9. **Code editor.** HA's light fallbacks (`#F90`, `#8DA6CE`, `#cda869`, `#777`) fail on light backgrounds, and its dark ones were designed for `#1c1c1c`. All 18 tokens are defined in each mode and checked on both the editor background and the active line.
 
 ## 4. Design decisions
 
 | Decision | Why |
 |---|---|
-| Dark-only (no `modes.light`) | The brand is dark. A light mode would double the palette and testing surface for no current need. |
-| System font stack instead of shipping SF | Apple's SF licence forbids web self-hosting. The stack gives real SF on Apple devices and native fonts elsewhere. |
-| Secondary text and off-state icons in warm grey `#c2bbb3` instead of gold | In the upstream theme gold meant everything: secondary text, links, on and off. Now gold only means *active, link or selected*. |
-| Gold fills with dark text | White on `#eac578` is 1.65:1; `#211f1f` on gold is 9.96:1. |
-| Slider track `#8a827c` | The lowest warm grey that clears 3:1 (3.82:1) without competing with the gold indicator. |
+| Industrial control-panel direction | Chosen by the owner from four options (blueprint, control panel, terminal, drafting paper). |
+| Dark and light modes | Owner's choice; wall tablets can follow the device, and phones follow their OS setting. |
+| Hanken Grotesk / Syncopate / IBM Plex Mono | TE uses licensed Univers Next and its own TechnoType. Candidates were rendered next to TE's webfonts: Hanken matched Univers's narrow numerals, single-storey `g`, spurred `G` and angled `t`; Syncopate matched TechnoType's thin, wide, all-caps geometry. All are free to redistribute. |
+| Self-hosted fonts, Latin + Latin Extended only | Wall tablets must work offline, and the extended set covers Latvian (checked glyph by glyph). Other scripts fall back to system fonts. |
+| Syncopate only for titles | Wide caps are hard to read in body text and long settings pages. |
+| Body text at weight 400, not TE's thin 100/300 | Thin strokes fail readability at UI sizes. |
+| Card edges below 3:1 | They're decorative. Input outlines, switch outlines and slider tracks all clear 3:1. |
+| Safety orange `#ff7a1a` (dark) / `#df600c` fill + `#a34405` text (light) | In light mode, `#df600c` is the only band of that hue that clears both 4.5:1 for dark ink and 3:1 against the panel. |
 
 ## 5. Working on it
 
 ```bash
-# 1. Edit colours under modes.dark in themes/engineering_theme.yaml
-# 2. Check contrast
+# 1. Edit themes/engineering_theme.yaml: colours in BOTH modes.dark and modes.light
+# 2. Check contrast (both modes)
 python3 scripts/contrast_check.py
-# 3. Deploy to a test instance (backs up, validates, reloads, verifies)
+# 3. Deploy to a test instance (backs up, copies www/, validates, reloads, verifies)
 HA_HOST=root@homeassistant.local ./scripts/deploy.sh
-# 4. Hard-refresh the browser and check: Settings → Automations → New automation
-#    (text fields and dropdowns), a dialog, the sidebar, a toggle, a slider
+# 4. Hard-refresh and check both modes (Profile → Theme → Light / Dark):
+#    automation editor fields and dropdowns, a dialog, sidebar, toggle, slider,
+#    template editor, history chart
 ```
 
-When adding a colour pair the UI actually renders, add a line to `checks` in `scripts/contrast_check.py`.
+When adding a colour pair the UI actually renders, add it to `checks_for()` in `scripts/contrast_check.py`.
+
+**Testing the other mode without touching account settings.** In the browser console, `document.querySelector('home-assistant')._applyTheme(true)` switches the current tab to dark (use `false` for light) in memory. It's good for screenshots. Automated contrast scans after this in-memory switch can be unreliable on some pages: on the template editor, the computed colours of a few slotted elements didn't match what was rendered. For an authoritative scan, set the mode in Profile → Theme and reload.
 
 **After every HA frontend upgrade**, open a few pages and check in the browser console that nothing renders in Roboto and that charts are patched:
 
@@ -66,6 +79,10 @@ const f={};(function w(r){for(const e of r.querySelectorAll('*')){if(e.shadowRoo
  if(p?.nodeType===1&&n.textContent.trim()){const k=getComputedStyle(p).fontFamily.split(',')[0];f[k]=(f[k]||0)+1}}})(document);f
 ```
 
+### Updating the fonts
+
+The `.woff2` files come from the Google Fonts CSS2 API (Latin and Latin Extended subsets). If you change weights or add a family, regenerate `www/fonts/fonts.css` in the same format and add the font's licence file. Syncopate is **Apache 2.0**, not OFL.
+
 ### SSH access to Home Assistant
 
 `deploy.sh` needs the **Terminal & SSH** (or *Advanced SSH & Web Terminal*) add-on:
@@ -74,27 +91,29 @@ const f={};(function w(r){for(const e of r.querySelectorAll('*')){if(e.shadowRoo
 - **authorized_keys**: add your public key, then restart the add-on.
 - If `homeassistant.local` resolves to several addresses, SSH to the IP directly.
 
-Backups made by `deploy.sh` are stored on the host in `/config/backups_manual/engineering_theme.yaml.<timestamp>`. To roll back, copy one back to `/config/themes/engineering_theme.yaml` and run `frontend.reload_themes`.
+Backups made by `deploy.sh` are stored in `/config/backups_manual/engineering_theme.yaml.<timestamp>`. To roll back, copy one to `/config/themes/engineering_theme.yaml` and run `frontend.reload_themes`.
 
 ## 6. Open items and next steps
 
-0. **Define and build the new visual design.** This is the reason the fork exists. Every colour change must keep `scripts/contrast_check.py` green.
-1. **Remaining visual QA.** Desktop Chrome is verified. Still to check:
-   - a switch in the *on* state and a slider inside a more-info dialog (every light was unavailable during testing, and toggling a profile switch would have changed account settings);
+1. **Authoritative dark-mode scan of the template editor.** Set Profile → Theme → Dark, reload, and run a contrast scan. It looked correct in a screenshot, but the automated scan was unreliable after the in-memory switch (section 5).
+2. **Remaining visual QA in both modes:**
+   - a slider inside a more-info dialog (every light was unavailable during testing);
+   - the automation editor's dropdowns and dialogs;
+   - the energy dashboard;
    - Safari on iOS or iPadOS;
-   - the wall tablet;
-   - the energy dashboard.
-2. **Unthemed neutral surfaces.** Menus, dialogs and the off-state switch (track `#202020`, border `#7a7a7a`, thumb `#989898`) use HA's cool `ha-color-neutral-*` ramp, while cards are warm `#2c292a`. This is accessible (off-switch border 3.36:1, thumb 5.65:1) but slightly off-brand; a warm neutral ramp would unify it.
-3. **Multi-select checkmarks are white, not gold.** `ha-form-multi_select` draws the checkbox as an icon in the primary text colour. It's readable but not themeable without the font bridge's approach.
-4. **Font on non-Apple devices.** Android wall tablets render Roboto. Consider self-hosting Inter as a fallback (instructions in the README).
-5. **Upstream `luxury_dashboard` has the same accessibility bugs.** It could be fixed the same way and offered upstream as a PR.
-6. **HACS default listing.** Submitting it needs a tagged GitHub release and screenshots in the README.
-7. **Version floor.** Only tested on 2026.9.3. Establish the minimum supported HA version and add `"homeassistant"` to `hacs.json`.
+   - the wall tablet.
+3. **Syncopate in narrow headers.** Wide caps can truncate long page titles on phones. Consider a mobile media query in the bridge, or a smaller `ha-card-header-font-size`.
+4. **Domain state colours** (lights amber, climate orange and so on) are HA defaults. A control panel might want a unified status system (for example, on = orange, fault = red).
+5. **Multi-select checkmarks** use the primary text colour (a fixed HA choice). They're readable but not accent-coloured.
+6. **HACS default listing.** Needs a tagged GitHub release and README screenshots of both modes.
+7. **Version floor.** Only tested on 2026.9.3. Add `"homeassistant"` to `hacs.json` once a minimum version is known.
 
 ## 7. Reference instance notes
 
-These are unrelated to this repo, but they exist on the instance where the theme was developed. Don't be surprised by them:
+These aren't part of this repo, but they exist on the instance where the theme was developed:
 
-- Iconic Theme and the upstream `luxury_dashboard` theme are also installed, together with its assets in `/config/www/assets/`.
-- `configuration.yaml` loads two modules through `frontend: extra_module_url:`. `/local/iconic-theme/iconic-fonts.js` is Iconic's font bridge. Only one bridge is needed, since both follow the active theme's font variables. When deploying this fork, either keep Iconic's bridge or swap it for `/local/engineering-theme/theme-fonts.js`; don't load both. `/local/assets/css/load-fonts.js` is a Poppins loader for `luxury_dashboard`; neither Iconic nor Engineering needs it, and it can be removed if `luxury_dashboard` is uninstalled (Core restart required).
-- Pre-change backups are in `/config/backups_manual/`.
+- Iconic Theme and the upstream `luxury_dashboard` theme are also installed; the latter's assets are in `/config/www/assets/`.
+- `configuration.yaml` loads two modules through `frontend: extra_module_url:`:
+  - `/local/engineering-theme/theme-fonts.js` is this repo's font bridge. It replaced Iconic's `iconic-fonts.js` on 2026-09-26 and serves both themes. The files remain in `/config/www/iconic-theme/`, unused.
+  - `/local/assets/css/load-fonts.js` is a Poppins loader for `luxury_dashboard`.
+- Pre-change backups are in `/config/backups_manual/`, including `configuration.yaml.pre-engineering`.

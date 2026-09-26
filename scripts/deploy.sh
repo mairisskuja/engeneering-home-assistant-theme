@@ -24,16 +24,18 @@ echo "==> Backing up current theme on $HA_HOST"
   [ ! -f /config/themes/engineering_theme.yaml ] || \
   cp /config/themes/engineering_theme.yaml /config/backups_manual/engineering_theme.yaml.$(date +%Y%m%d-%H%M%S)'
 
-echo "==> Copying theme and font bridge"
+echo "==> Copying theme, font bridge and fonts"
 scp -q -P "$HA_PORT" "$ROOT/themes/engineering_theme.yaml" "$HA_HOST:/config/themes/engineering_theme.yaml"
 "${SSH[@]}" 'mkdir -p /config/www/engineering-theme'
-scp -q -P "$HA_PORT" "$ROOT/www/theme-fonts.js" "$HA_HOST:/config/www/engineering-theme/theme-fonts.js"
+scp -q -r -P "$HA_PORT" "$ROOT/www/." "$HA_HOST:/config/www/engineering-theme/"
 "${SSH[@]}" 'grep -q "/local/engineering-theme/theme-fonts.js" /config/configuration.yaml' || {
   echo "WARNING: configuration.yaml does not load the font bridge. Add under frontend:" >&2
   echo "  extra_module_url:" >&2
   echo "    - /local/engineering-theme/theme-fonts.js" >&2
   echo "then restart Home Assistant Core." >&2
 }
+"${SSH[@]}" '! grep -q "iconic-fonts.js" /config/configuration.yaml' || \
+  echo "WARNING: Iconic's font bridge is also loaded. Load only one bridge; this one covers both themes." >&2
 
 echo "==> Checking configuration and reloading themes"
 "${SSH[@]}" 'ha core check >/dev/null && \
