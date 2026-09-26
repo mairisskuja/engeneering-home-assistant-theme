@@ -38,7 +38,7 @@ scenes:                        # optional; colours: cream, yellow, orange, brown
   - { name: "OFF", color: dark, brightness: 0 }
 ```
 
-Install it with `scripts/deploy.sh` (which copies `www/`), then `scripts/install_dashboard.sh <dashboard-url-path> dashboards/essential.json`. That registers the card as a Lovelace resource and saves a panel-view dashboard, backing up the old config first. Barlow Condensed and Share Tech Mono (OFL) are self-hosted with the other fonts.
+Install it with `scripts/deploy.sh` (which copies `www/`), then `scripts/install_dashboard.sh <dashboard-url-path> dashboards/lights.json`. That registers the card as a Lovelace resource and saves a panel-view dashboard, backing up the old config first. Barlow Condensed and Share Tech Mono (OFL) are self-hosted with the other fonts.
 
 ## Palette
 
@@ -149,7 +149,7 @@ themes/engineering_theme.yaml   The theme (dark + light)
 www/theme-fonts.js              Font bridge (frontend.extra_module_url)
 www/fonts/                      Self-hosted fonts, fonts.css and licences
 www/engineering-console-card.js Lighting console card (custom:engineering-console-card)
-dashboards/essential.json       Example dashboard config for the console
+dashboards/lights.json       Example dashboard config for the console
 scripts/install_dashboard.sh    Registers the card and saves a dashboard config
 scripts/ha_ws.py                Runs HA websocket commands on the host
 scripts/contrast_check.py       WCAG gate for both modes (no dependencies)

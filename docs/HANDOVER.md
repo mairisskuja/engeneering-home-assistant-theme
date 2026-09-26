@@ -18,7 +18,7 @@ Development was AI-accelerated with Claude Code: HA frontend source research, fo
 | Deployed to the reference HA instance | Yes. Both modes are loaded (78 dark / 79 light colour variables), and the font bridge is registered at `/local/engineering-theme/theme-fonts.js` |
 | Browser QA (Chrome, macOS) | Overview, profile and history chart: zero contrast failures in both modes. Template editor: zero in light; dark checked visually only (see open item 1). Latvian glyphs confirmed in Syncopate. |
 | HACS | `hacs.json` present; installable as a custom repository (the font bridge is a manual step) |
-| Console dashboard | `custom:engineering-console-card` 0.1.0, installed on the reference instance as the **Essential** dashboard (`/dashboard-essential/0`) and registered as a Lovelace resource. All controls were verified with service calls intercepted; not yet exercised against real lights. |
+| Console dashboard | `custom:engineering-console-card` 0.1.0, installed on the reference instance as the **Essential** dashboard (`/dashboard-lights/0`) and registered as a Lovelace resource. All controls were verified with service calls intercepted; not yet exercised against real lights. |
 
 Reference environment: Home Assistant OS, Core **2026.9.3**, frontend **20260826.7**.
 
@@ -119,7 +119,7 @@ Backups made by `deploy.sh` are stored in `/config/backups_manual/engineering_th
 
 ## 7. Reference instance notes
 
-- The **Essential** dashboard (`dashboard-essential`) now holds a single panel view with the console card. The previous config (just a "Key lights" heading) is backed up at `/config/backups_manual/lovelace.dashboard-essential.<timestamp>.json`.
+- The **Essential** dashboard lives at `dashboard-lights` (`/dashboard-lights/0`) and holds a single panel view with the console card. It was originally created as `dashboard-essential`. HA can't change a dashboard's URL, so on 2026-09-26 it was recreated under the new path, its config copied across, and the old dashboard deleted. Backups: `/config/backups_manual/lovelace.dashboard-essential.*.json` (the original "Key lights" heading, and the console config taken before the rename).
 - Lovelace resource: `/local/engineering-theme/engineering-console-card.js?v=<version>-<timestamp>`. `install_dashboard.sh` updates the `v` parameter on every run.
 
 These aren't part of this repo, but they exist on the instance where the theme was developed:

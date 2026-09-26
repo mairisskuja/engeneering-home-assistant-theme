@@ -8,7 +8,7 @@
 #
 # Run scripts/deploy.sh first so the card file is on the host.
 #
-#   ./scripts/install_dashboard.sh dashboard-essential dashboards/essential.json
+#   ./scripts/install_dashboard.sh dashboard-lights dashboards/lights.json
 set -euo pipefail
 
 URL_PATH="${1:?usage: install_dashboard.sh <dashboard url_path> <config.json>}"
