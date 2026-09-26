@@ -8,13 +8,15 @@
 //   type: custom:engineering-console-card
 //   title: ESSENTIAL                 # optional
 //   exclude: [light.some_light]      # optional
-//   scenes:                          # optional, replaces the defaults
+//   scenes:                          # optional, replaces the defaults;
+//                                    # shown as big tags (current floor) and
+//                                    # as small keys in every area module
 //     - { name: ALL ON, color: cream, brightness: 100 }
 //     - { name: EVENING, color: orange, brightness: 45, kelvin: 2700 }
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.0";
 
 const DEFAULT_SCENES = [
   { name: "ALL ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -171,6 +173,16 @@ const STYLE = `
   .t-orange { background: linear-gradient(#ff6e36, var(--tag-orange)); color: #1d1d1b; }
   .t-brown { background: linear-gradient(#b0611f, var(--tag-brown)); color: #fff; }
   .t-dark { background: linear-gradient(#3a3d44, var(--tag-dark)); color: #fff; }
+
+  /* Per-area scene keys */
+  .module.area { display: flex; flex-direction: column; }
+  .minitags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 14px; align-items: center; }
+  .minitags .lbl { font: 11px var(--fm); color: var(--soft); text-transform: uppercase; letter-spacing: .08em; margin-right: 2px; }
+  .mtag { border: 1.5px solid var(--rule); border-radius: 5px; box-shadow: 0 3px 0 var(--rule); cursor: pointer;
+    font: 600 14px/1 var(--fc); text-transform: uppercase; letter-spacing: .03em; padding: 6px 9px 5px;
+    transition: transform .05s, box-shadow .05s; }
+  .mtag:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--rule); }
+  .mtag:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: 0 3px 0 var(--rule); }
 
   /* System */
   .leds { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px;
@@ -369,7 +381,7 @@ class EngineeringConsoleCard extends HTMLElement {
 
   _areaHtml(area) {
     return `
-      <section class="module" aria-label="${esc(area.name)}">
+      <section class="module area" aria-label="${esc(area.name)}">
         <div class="mhead">
           <h2 class="mtitle">${esc(area.name)}</h2>
           <span class="mmeta" data-areameta="${esc(area.id)}"></span>
@@ -377,6 +389,12 @@ class EngineeringConsoleCard extends HTMLElement {
             data-area="${esc(area.id)}"></button>
         </div>
         <div class="knobs">${area.lights.map((l) => (l.kind === "dim" ? this._knobHtml(l) : this._onoffHtml(l))).join("")}</div>
+        <div class="minitags" role="group" aria-label="Scenes for ${esc(area.name)}">
+          <span class="lbl" aria-hidden="true">Scene</span>
+          ${this._config.scenes.map((sc, i) => `
+            <button class="mtag t-${esc(sc.color || "cream")}" data-ascene="${i}" data-sarea="${esc(area.id)}"
+              aria-label="${esc(sc.name)}, ${esc(area.name)}" title="${esc(sc.name)} · ${sc.brightness ? `${sc.brightness}%` : "off"}">${esc(sc.name)}</button>`).join("")}
+        </div>
       </section>`;
   }
 
@@ -432,6 +450,7 @@ class EngineeringConsoleCard extends HTMLElement {
         pill.setAttribute("aria-checked", String(on > 0));
         pill.disabled = live.length === 0;
       }
+      root.querySelectorAll(`[data-sarea="${CSS.escape(area.id)}"]`).forEach((b) => (b.disabled = live.length === 0));
       const meta = root.querySelector(`[data-areameta="${CSS.escape(area.id)}"]`);
       if (meta) meta.textContent = `${on}/${area.lights.length} on`;
     }
@@ -532,6 +551,9 @@ class EngineeringConsoleCard extends HTMLElement {
     root.querySelectorAll("[data-scene]").forEach((b) =>
       b.addEventListener("click", () => this._applyScene(this._config.scenes[+b.dataset.scene]))
     );
+    root.querySelectorAll("[data-ascene]").forEach((b) =>
+      b.addEventListener("click", () => this._applyScene(this._config.scenes[+b.dataset.ascene], b.dataset.sarea))
+    );
     root.querySelectorAll("[data-onoff] button").forEach((b) =>
       b.addEventListener("click", () => this._call("toggle", b.closest(".kn").dataset.light))
     );
@@ -607,8 +629,11 @@ class EngineeringConsoleCard extends HTMLElement {
     if (ids.length) this._call(anyOn ? "turn_off" : "turn_on", ids);
   }
 
-  _applyScene(scene) {
-    const lights = this._model().areas.flatMap((a) => a.lights).filter((l) => !this._state(l.id).na);
+  _applyScene(scene, areaId = null) {
+    const lights = this._model().areas
+      .filter((a) => !areaId || a.id === areaId)
+      .flatMap((a) => a.lights)
+      .filter((l) => !this._state(l.id).na);
     if (!lights.length) return;
     if (!scene.brightness) {
       this._call("turn_off", lights.map((l) => l.id));

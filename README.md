@@ -26,7 +26,7 @@ An industrial control-panel theme for Home Assistant: graphite or light-grey pan
 - **A knob per light**: drag, scroll or use the arrow keys to dim; tap, Enter or Space to toggle; Home/End for off/full. Lights without dimming get an on/off key. Unavailable lights are hatched and disabled.
 - **An on/off toggle per area**, for all of that area's available lights.
 - **An LCD summary** for the current tab (on, off and unavailable counts, average brightness, one dot per light), plus a **SYSTEM** fault list across all lights.
-- **Scene tags** (ALL ON, READ, EVENING, NIGHT, OFF) that apply to the current tab. They send colour temperature only to lights that support it.
+- **Scene tags** (ALL ON, READ, EVENING, NIGHT, OFF) that apply to the current tab, plus a row of **small scene keys in every area module** that apply the same scenes to just that area. Both send colour temperature only to lights that support it, and an area's keys are disabled when none of its lights are available.
 - **Accessibility and theming**: knobs are ARIA sliders, toggles are switches, and every text pair passes AA in both modes (checked in the browser). It follows the theme's dark mode.
 
 ```yaml

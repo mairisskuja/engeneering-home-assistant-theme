@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1 (2026-09-26)
+
+- Console card 0.2.0: every area module now has a row of small scene keys (the configured scenes, defaulting to ALL ON / READ / EVENING / NIGHT / OFF) that apply to that area only. The keys are disabled when none of the area's lights are available. Verified with intercepted service calls: each key targets only its own area's available lights.
+
 ## 0.3.0 (2026-09-26)
 
 ### Console dashboard
