@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.5 (2026-09-26)
+
+- Console card 0.5.0:
+  - the default "ALL ON" scene is renamed "ON", on the big tags and the area keys;
+  - Scene selection is now a regular grid module (same size as System-01 and the area modules, with tags in an auto-fit grid) placed right after the LCD summary;
+  - System-01 moves to the end of the grid.
+
 ## 0.3.4 (2026-09-26)
 
 - Console card 0.4.0: "blinkenlights" animation on the LCD dot matrix. It has three phases: a column-and-row sweep with a fading trail, random front-panel flicker, then each dot settles to its real state in reading order (about 3 s). It runs every 30 s, on every scene change (big tags and area keys) and once after the card first renders. State updates arriving mid-animation are held and painted when it ends. It's skipped in hidden tabs and when `prefers-reduced-motion` is set. The frame sequence was verified in the browser, and the final frame matched the live light states.

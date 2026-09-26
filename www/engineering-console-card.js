@@ -12,15 +12,15 @@
 //   scenes:                          # optional, replaces the defaults;
 //                                    # shown as big tags (current floor) and
 //                                    # as small keys in every area module
-//     - { name: ALL ON, color: cream, brightness: 100 }
+//     - { name: "ON", color: cream, brightness: 100 }
 //     - { name: EVENING, color: orange, brightness: 45, kelvin: 2700 }
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.4.0";
+const VERSION = "0.5.0";
 
 const DEFAULT_SCENES = [
-  { name: "ALL ON", color: "cream", brightness: 100, kelvin: 4000 },
+  { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
   { name: "READ", color: "yellow", brightness: 90, kelvin: 3500 },
   { name: "EVENING", color: "orange", brightness: 45, kelvin: 2700 },
   { name: "NIGHT", color: "brown", brightness: 8, kelvin: 2200 },
@@ -165,15 +165,17 @@ const STYLE = `
   .pill:disabled { opacity: .5; cursor: not-allowed; }
 
   /* Scene tags */
-  .tags { display: flex; flex-wrap: wrap; gap: 12px; }
-  .tag { position: relative; width: 112px; height: 132px; border-radius: 9px; border: 2px solid var(--rule);
+  .tags { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 12px 10px; }
+  .module.scenes { display: flex; flex-direction: column; }
+  .module.scenes .hint { margin-top: auto; padding-top: 14px; }
+  .tag { position: relative; height: 108px; border-radius: 9px; border: 2px solid var(--rule);
     box-shadow: 0 5px 0 var(--rule); cursor: pointer; display: flex; flex-direction: column;
     align-items: center; justify-content: center; gap: 4px; padding: 0 6px;
     transition: transform .05s, box-shadow .05s; }
   .tag:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--rule); }
   .tag::before { content: ""; position: absolute; top: 12px; width: 12px; height: 12px; border-radius: 50%;
     background: rgba(0,0,0,.28); box-shadow: inset 0 1px 2px rgba(0,0,0,.4); }
-  .tag b { font: 700 24px/1 var(--fc); text-transform: uppercase; }
+  .tag b { font: 700 22px/1 var(--fc); text-transform: uppercase; }
   .tag span { font: 11px var(--fm); letter-spacing: .08em; }
   .t-cream { background: linear-gradient(#f4f2ec, var(--tag-cream)); color: #1d1d1b; }
   .t-yellow { background: linear-gradient(#f3cf66, var(--tag-yellow)); color: #1d1d1b; }
@@ -202,7 +204,6 @@ const STYLE = `
     .wrap { padding: 8px; }
     .grid { grid-template-columns: 1fr; }
     .kn { width: 96px; } .dial { width: 88px; height: 88px; }
-    .tag { width: 96px; height: 112px; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 `;
@@ -379,14 +380,8 @@ class EngineeringConsoleCard extends HTMLElement {
                 <div class="dots" data-dots aria-hidden="true"></div>
               </div>
             </section>
-            <section class="module" aria-label="System">
-              <div class="mhead"><h2 class="mtitle">System-01</h2></div>
-              <ul class="leds" data-faults></ul>
-              <div class="verdict" data-verdict></div>
-            </section>
-            ${model.areas.map((a) => this._areaHtml(a)).join("")}
-            <section class="module wide" aria-label="Scenes">
-              <div class="mhead"><h2 class="mtitle">Scene selection</h2><span class="mmeta">Applies to: ${esc(scope)}</span></div>
+            <section class="module scenes" aria-label="Scenes">
+              <div class="mhead"><h2 class="mtitle">Scene selection</h2><span class="mmeta">${esc(scope)}</span></div>
               <div class="tags">
                 ${c.scenes.map((s, i) => `
                   <button class="tag t-${esc(s.color || "cream")}" data-scene="${i}">
@@ -394,6 +389,12 @@ class EngineeringConsoleCard extends HTMLElement {
                   </button>`).join("")}
               </div>
               <div class="hint">Drag or scroll a knob to dim · tap to toggle · arrow keys adjust</div>
+            </section>
+            ${model.areas.map((a) => this._areaHtml(a)).join("")}
+            <section class="module" aria-label="System">
+              <div class="mhead"><h2 class="mtitle">System-01</h2></div>
+              <ul class="leds" data-faults></ul>
+              <div class="verdict" data-verdict></div>
             </section>
           </div>
         </div>

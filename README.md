@@ -28,7 +28,7 @@ An industrial control-panel theme for Home Assistant: graphite or light-grey pan
 - **A title from a zone**: the header and LCD show the name of `zone` (default `zone.home`, i.e. your home location's name), or a fixed `title` if set.
 - **Blinkenlights**: every 30 seconds, and on every scene change, the LCD dot matrix plays an early-computer front-panel sequence (column sweep with trail, random flicker, then each dot settles to its real state; about 3 s). It's skipped in hidden tabs and when the device prefers reduced motion.
 - **An LCD summary** for the current tab (on, off and unavailable counts, average brightness, one dot per light), plus a **SYSTEM** fault list across all lights.
-- **Scene tags** (ALL ON, READ, EVENING, NIGHT, OFF) that apply to the current tab, plus a row of **small scene keys in every area module** that apply the same scenes to just that area. Both send colour temperature only to lights that support it, and an area's keys are disabled when none of its lights are available.
+- **Scene tags** (ON, READ, EVENING, NIGHT, OFF) that apply to the current tab, plus a row of **small scene keys in every area module** that apply the same scenes to just that area. Both send colour temperature only to lights that support it, and an area's keys are disabled when none of its lights are available.
 - **Accessibility and theming**: knobs are ARIA sliders, toggles are switches, and every text pair passes AA in both modes (checked in the browser). It follows the theme's dark mode.
 
 ```yaml
@@ -37,7 +37,7 @@ zone: zone.home                # optional; the zone's name is the console title
 title: My console              # optional; overrides the zone name
 exclude: [light.some_light]    # optional
 scenes:                        # optional; colours: cream, yellow, orange, brown, dark
-  - { name: ALL ON, color: cream, brightness: 100, kelvin: 4000 }
+  - { name: "ON", color: cream, brightness: 100, kelvin: 4000 }
   - { name: "OFF", color: dark, brightness: 0 }
 ```
 
