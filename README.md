@@ -188,7 +188,7 @@ hacs.json                       HACS metadata
 - Iconic Theme (accessibility rework, font bridge, tooling): [Mairis Skuja [Iconic FAB]](https://github.com/mairisskuja/iconic-home-assistant-theme), MIT.
 - Engineering Theme: Mairis Skuja, built with [Claude Code](https://claude.com/claude-code).
 - Fonts: Hanken Grotesk (© 2021 The Hanken Grotesk Project Authors, OFL), Syncopate (© 2010 Astigmatic, Apache 2.0), IBM Plex Mono (© 2017 IBM Corp., OFL), Barlow Condensed and Share Tech Mono (OFL).
-- Console card look: inspired by [Workshop Console](https://workshop-console-demo.vercel.app/). This is an independent implementation, not affiliated with that product.
+- Console card look: visually inspired by [Workshop Console](https://workshop-console-demo.vercel.app/). The card is an independent implementation written from scratch. It uses none of Workshop Console's code or assets and isn't affiliated with or endorsed by that product.
 - Visual inspiration: [teenage.engineering](https://teenage.engineering/). This project isn't affiliated with or endorsed by teenage engineering, and it doesn't include any of their fonts or assets.
 
 This repository is released under the [GNU GPL v3.0](LICENSE). It incorporates MIT-licensed work from the projects above; their notices are kept in [NOTICE](NOTICE). The font licences are in `www/fonts/`.
