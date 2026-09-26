@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.12 (2026-09-26)
+
+- Console card 0.10.1: fix — the card now re-renders when an entity, area or floor is renamed. Before this, renamed lights and sensors kept their old names until the list of entities changed.
+- Lights dashboard: `sensor.alpstuga_air_quality_moni_temperature_sensor` excluded from the Temperature panel. On the reference instance, the ALPSTUGA 2 sensor was renamed "Master guļamistaba".
+
 ## 0.3.11 (2026-09-26)
 
 - Console card 0.10.0: new `temperature_order` option (entity ids or names, with the `"..."` placeholder, like `area_order`); unlisted sensors are sorted by name.

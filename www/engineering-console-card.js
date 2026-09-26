@@ -25,7 +25,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.10.0";
+const VERSION = "0.10.1";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -247,7 +247,13 @@ class EngineeringConsoleCard extends HTMLElement {
     this._hass = hass;
     this.toggleAttribute("dark", !!hass.themes?.darkMode);
     const model = this._model();
-    const key = JSON.stringify([this._title(), model.temps.map((t) => t.id), this._tab, model.tabs.map((t) => t.id), model.areas.map((a) => [a.id, a.lights.map((l) => l.id + l.kind)])]);
+    // Re-render when anything structural changes, including renames.
+    const key = JSON.stringify([
+      this._title(), this._tab,
+      model.temps.map((t) => [t.id, t.name]),
+      model.tabs.map((t) => [t.id, t.name]),
+      model.areas.map((a) => [a.id, a.name, a.lights.map((l) => [l.id, l.name, l.kind])]),
+    ]);
     if (key !== this._structure) {
       this._structure = key;
       this._render(model);
