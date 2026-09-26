@@ -29,7 +29,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.13.2";
+const VERSION = "0.14.0";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -104,7 +104,9 @@ const STYLE = `
     padding: 10px 16px; flex-wrap: wrap;
   }
   .brand { font: 700 26px/1 var(--fc); letter-spacing: .02em; text-transform: uppercase; margin-right: auto; }
-  .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tabbar { background: var(--paper); padding: 10px 16px; }
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tabbar .key { flex: 1 1 0; justify-content: center; min-width: max-content; }
   .key {
     display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
     border: 1.5px solid var(--rule); border-radius: 3px; padding: 6px 12px;
@@ -493,15 +495,17 @@ class EngineeringConsoleCard extends HTMLElement {
       </svg>
       <div class="wrap">
         <div class="console">
-          <div class="topbar">
-            <div class="brand">${esc(this._title())}</div>
-            <div class="tabs" role="tablist" aria-label="Floors">
+          <nav class="tabbar">
+              <div class="tabs" role="tablist" aria-label="Floors">
               ${model.tabs.map((t, i) => `
                 <button class="key" role="tab" data-tab="${esc(t.id)}" aria-selected="${t.id === this._tab}">
                   <span class="led ${t.id === this._tab ? "on" : ""}"></span>
                   <span class="num">${String(i + 1).padStart(2, "0")}</span>${esc(t.name)}
                 </button>`).join("")}
             </div>
+          </nav>
+          <div class="topbar">
+            <div class="brand">${esc(this._title())}</div>
             <div class="status">
               <div class="clock" data-clock></div>
               <div class="link"><span class="led" data-linkled></span><span data-linktext></span></div>

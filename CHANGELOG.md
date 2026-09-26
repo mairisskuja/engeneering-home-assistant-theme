@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.20 (2026-09-26)
+
+- Console card 0.14.0: the floor tabs moved out of the title bar into their own full-width bar as the first row of the console; the tabs share the width equally. The title bar keeps the zone name, clock and link status.
+
 ## 0.3.19 (2026-09-26)
 
 - Console card 0.13.2: Temperature and Humidity now comes before Scene selection (order: ALL → Temperature and Humidity → Scene selection → areas → System-01).
