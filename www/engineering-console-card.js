@@ -29,7 +29,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.17.1";
+const VERSION = "0.17.2";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -93,7 +93,7 @@ const STYLE = `
     --ok: #3ecf6e; --warn: #ffc53d; --bad: #ff6b6b; --tab-dark: #0f1113;
     --tag-cream: #d9d6cf;
   }
-  * { box-sizing: border-box; }
+  *, *::before, *::after { box-sizing: border-box; }
   button { font: inherit; color: inherit; }
   :focus-visible { outline: 3px solid var(--pointer); outline-offset: 2px; }
 
@@ -182,7 +182,7 @@ const STYLE = `
   /* Pill switch */
   /* 74x38 outer, 2px border -> 70x34 inside; 28px knob sits 3px from each edge */
   .pill { position: relative; width: 74px; height: 38px; border-radius: 19px; cursor: pointer; flex: none;
-    border: 2px solid var(--pill-edge); background: var(--face-lo); padding: 0; }
+    border: 2px solid var(--pill-edge); background: var(--face-lo); padding: 0; appearance: none; -webkit-appearance: none; }
   .pill::after { content: ""; position: absolute; top: 3px; left: 3px; width: 28px; height: 28px; border-radius: 50%;
     background: var(--knob); border: 2px solid var(--knob-edge); box-shadow: 0 1px 2px rgba(0,0,0,.35);
     transition: left .15s; }

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.26 (2026-09-27)
+
+- Console card 0.17.2: real toggle fix. `box-sizing: border-box` didn't apply to pseudo-elements, so the 28 px knob plus its 2 px border rendered 32 px wide inside a 34 px track, overflowing 1 px at the bottom and overlapping the right edge when on. `*::before` and `*::after` now use border-box, and the pill drops the native button `appearance`. Measured in the browser: 3 px gap on every side in both states.
+
 ## 0.3.25 (2026-09-27)
 
 - Console card 0.17.1: area toggle fixes.
