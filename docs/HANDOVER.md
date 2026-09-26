@@ -128,4 +128,8 @@ These aren't part of this repo, but they exist on the instance where the theme w
 - `configuration.yaml` loads two modules through `frontend: extra_module_url:`:
   - `/local/engineering-theme/theme-fonts.js` is this repo's font bridge. It replaced Iconic's `iconic-fonts.js` on 2026-09-26 and serves both themes. The files remain in `/config/www/iconic-theme/`, unused.
   - `/local/assets/css/load-fonts.js` is a Poppins loader for `luxury_dashboard`.
+- 2026-09-26 registry changes:
+  - `sensor.iconic_home_ara_temperatura` renamed to **"Outside"** (registry name; the entity id is unchanged).
+  - The legacy tado zone **Chillspot**: its 8 entities were removed from the entity registry. The device itself remains (disabled), because the tado integration doesn't support device removal. To remove it completely, delete the Chillspot zone in the tado app. If tado recreates the entities on reload, they'll be disabled and won't appear on dashboards.
+  - Registry backups: `core.*_registry.pre-chillspot.<timestamp>`.
 - Pre-change backups are in `/config/backups_manual/`, including `configuration.yaml.pre-engineering`.

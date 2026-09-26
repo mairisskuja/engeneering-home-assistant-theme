@@ -16,7 +16,8 @@
             "trepes",
             "...",
             "ieeja"
-          ]
+          ],
+          "hide_unavailable": true
         }
       ]
     }

@@ -14,6 +14,8 @@
 //                                    # floor/name order in between
 //   temperatures: true               # optional; temperature sensor panel
 //   temperature_exclude: [sensor.x]  # optional
+//   hide_unavailable: true           # optional; drop N/A rows from System-01
+//                                    # and the temperature panel (counts stay)
 //   scenes:                          # optional, replaces the defaults;
 //                                    # shown as big tags (current floor) and
 //                                    # as small keys in every area module
@@ -22,7 +24,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.8.0";
+const VERSION = "0.9.0";
 
 const DEFAULT_SCENES = [
   { name: "ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -338,13 +340,14 @@ class EngineeringConsoleCard extends HTMLElement {
     return { tabs, areas, all: lights, temps: this._temps() };
   }
 
-  _temps() {
+  _temps(includeUnavailable = !this._config.hide_unavailable) {
     if (this._config.temperatures === false) return [];
     const h = this._hass;
     const exclude = new Set(this._config.temperature_exclude || []);
     return Object.values(h.states)
       .filter((st) => st.entity_id.startsWith("sensor.") && st.attributes.device_class === "temperature")
       .filter((st) => !exclude.has(st.entity_id) && !h.entities?.[st.entity_id]?.hidden)
+      .filter((st) => includeUnavailable || Number.isFinite(parseFloat(st.state)))
       .map((st) => ({
         id: st.entity_id,
         name: (st.attributes.friendly_name || st.entity_id)
@@ -570,7 +573,15 @@ class EngineeringConsoleCard extends HTMLElement {
     // System: faults across ALL lights, not just the tab
     const faults = model.all.filter((l) => this._state(l.id).na);
     const list = root.querySelector("[data-faults]");
-    if (list) {
+    if (list && this._config.hide_unavailable) {
+      // N/A items hidden: summarise instead of listing them.
+      const temps = this._temps(true);
+      const tOn = temps.filter((t) => Number.isFinite(parseFloat(this._hass.states[t.id]?.state))).length;
+      const line = (ok, text) => `<li><span class="led ${ok ? "ok" : "bad"}"></span>${text}</li>`;
+      list.innerHTML =
+        line(!faults.length, `Lights online ${model.all.length - faults.length}/${model.all.length}`) +
+        (temps.length ? line(tOn === temps.length, `Temp sensors online ${tOn}/${temps.length}`) : "");
+    } else if (list) {
       list.innerHTML = faults.length
         ? faults.map((l) => `<li><span class="led bad"></span>${esc(l.name)} · N/A</li>`).join("")
         : `<li><span class="led ok"></span>All lights online</li>`;
