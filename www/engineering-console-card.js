@@ -17,7 +17,7 @@
 //     - { name: "OFF", color: dark, brightness: 0 }
 //   Scene colours: cream, yellow, orange, brown, dark.
 
-const VERSION = "0.3.0";
+const VERSION = "0.4.0";
 
 const DEFAULT_SCENES = [
   { name: "ALL ON", color: "cream", brightness: 100, kelvin: 4000 },
@@ -30,6 +30,8 @@ const DEFAULT_SCENES = [
 const SWEEP = 270; // knob travel in degrees
 const TICKS = 27;
 const SEND_INTERVAL = 300; // ms between service calls while dragging
+const BLINKEN_EVERY = 30000; // ms between dot-matrix animations
+const FRAME = 70; // ms per animation frame
 
 const esc = (s) =>
   String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -128,6 +130,10 @@ const STYLE = `
   .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--lcd-dim); }
   .dot.on { background: var(--lcd-hi); box-shadow: 0 0 5px var(--lcd-hi); }
   .dot.na { background: transparent; box-shadow: inset 0 0 0 1.5px #7a3b2a; }
+  /* Blinkenlights frames: lit and trailing dots */
+  .dots.anim .dot:not(.settled) { background: var(--lcd-dim); box-shadow: none; }
+  .dots.anim .dot.b1 { background: var(--lcd-hi); box-shadow: 0 0 6px var(--lcd-hi); }
+  .dots.anim .dot.b2 { background: #9a4418; }
 
   /* Knobs */
   .knobs { display: flex; flex-wrap: wrap; gap: 14px 10px; }
@@ -229,10 +235,14 @@ class EngineeringConsoleCard extends HTMLElement {
 
   connectedCallback() {
     this._timer = setInterval(() => this._tick(), 1000 * 15);
+    this._blinkTimer = setInterval(() => this._blinken(), BLINKEN_EVERY);
   }
 
   disconnectedCallback() {
     clearInterval(this._timer);
+    clearInterval(this._blinkTimer);
+    clearTimeout(this._frameTimer);
+    this._animating = false;
   }
 
   getCardSize() {
@@ -334,6 +344,8 @@ class EngineeringConsoleCard extends HTMLElement {
 
   _render(model) {
     const c = this._config;
+    clearTimeout(this._frameTimer);
+    this._animating = false;
     const scope = model.tabs.find((t) => t.id === this._tab)?.name || "All";
     this.shadowRoot.innerHTML = `
       <style>${STYLE}</style>
@@ -388,6 +400,7 @@ class EngineeringConsoleCard extends HTMLElement {
       </div>`;
     this._bind();
     this._tick();
+    setTimeout(() => this._blinken(), 600);
   }
 
   _areaHtml(area) {
@@ -478,11 +491,8 @@ class EngineeringConsoleCard extends HTMLElement {
     set("[data-l3]", `N/A ${String(na).padStart(2, "0")}   AVG ${String(avg).padStart(3, " ")}%`);
     const lcd = root.querySelector("[data-lcdlabel]");
     if (lcd) lcd.setAttribute("aria-label", `${on.length} on, ${this._lcd.off} off, ${na} unavailable, average brightness ${avg}%`);
-    const dots = root.querySelector("[data-dots]");
-    if (dots) {
-      dots.style.setProperty("--cols", String(Math.min(8, Math.max(4, Math.ceil(Math.sqrt(sts.length * 2))))));
-      dots.innerHTML = sts.map((s) => `<i class="dot${s.na ? " na" : s.on ? " on" : ""}"></i>`).join("");
-    }
+    this._dotStates = sts;
+    if (!this._animating) this._paintDots();
 
     // System: faults across ALL lights, not just the tab
     const faults = model.all.filter((l) => this._state(l.id).na);
@@ -497,6 +507,78 @@ class EngineeringConsoleCard extends HTMLElement {
     set("[data-linktext]", `LINK OK · ${allOn} ON`);
     root.querySelector("[data-linkled]")?.classList.add("ok");
     this._tick();
+  }
+
+  _paintDots() {
+    const dots = this.shadowRoot?.querySelector("[data-dots]");
+    const sts = this._dotStates || [];
+    if (!dots) return;
+    dots.classList.remove("anim");
+    dots.style.setProperty("--cols", String(Math.min(8, Math.max(4, Math.ceil(Math.sqrt(sts.length * 2))))));
+    dots.innerHTML = sts.map((s) => `<i class="dot${s.na ? " na" : s.on ? " on" : ""}"></i>`).join("");
+  }
+
+  // Early-computer "blinkenlights" on the LCD dot matrix: a column sweep with
+  // a fading trail, a burst of random front-panel flicker, then each dot
+  // settles to its real state in reading order. About 2.5 seconds.
+  _blinken() {
+    if (this._animating || document.hidden) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const box = this.shadowRoot?.querySelector("[data-dots]");
+    if (!box || !this._dotStates?.length) return;
+    this._paintDots();
+    const dots = [...box.children];
+    const cols = +getComputedStyle(box).getPropertyValue("--cols") || 8;
+    const rows = Math.ceil(dots.length / cols);
+    const frames = [];
+
+    for (let c = 0; c < cols + 2; c++) {
+      frames.push((d, i) => (i % cols === c ? "b1" : i % cols === c - 1 ? "b2" : ""));
+    }
+    for (let r = 0; r < rows; r++) {
+      frames.push((d, i) => (Math.floor(i / cols) === r ? "b1" : Math.floor(i / cols) === r - 1 ? "b2" : ""));
+    }
+    for (let f = 0; f < 14; f++) {
+      const lit = dots.map(() => Math.random());
+      frames.push((d, i) => (lit[i] < 0.38 ? "b1" : lit[i] < 0.5 ? "b2" : ""));
+    }
+    const noise = frames.length;
+
+    this._animating = true;
+    box.classList.add("anim");
+    let frame = 0;
+    let settled = 0;
+    const step = () => {
+      if (!this._animating) return;
+      if (frame < noise) {
+        const fn = frames[frame++];
+        dots.forEach((d, i) => {
+          d.classList.remove("b1", "b2");
+          const cls = fn(d, i);
+          if (cls) d.classList.add(cls);
+        });
+        this._frameTimer = setTimeout(step, FRAME);
+        return;
+      }
+      // Settle: reveal real states one dot at a time over residual flicker.
+      const sts = this._dotStates || [];
+      settled++;
+      dots.forEach((d, i) => {
+        if (i < settled) {
+          d.className = `dot${sts[i]?.na ? " na" : sts[i]?.on ? " on" : ""} settled`;
+        } else {
+          d.classList.remove("b1", "b2");
+          if (Math.random() < 0.3) d.classList.add("b1");
+        }
+      });
+      if (settled < dots.length) {
+        this._frameTimer = setTimeout(step, FRAME / 2);
+      } else {
+        this._animating = false;
+        this._paintDots();
+      }
+    };
+    step();
   }
 
   _paintLight(kn) {
@@ -641,6 +723,7 @@ class EngineeringConsoleCard extends HTMLElement {
   }
 
   _applyScene(scene, areaId = null) {
+    this._blinken();
     const lights = this._model().areas
       .filter((a) => !areaId || a.id === areaId)
       .flatMap((a) => a.lights)
