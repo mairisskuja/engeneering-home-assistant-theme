@@ -1,0 +1,5 @@
+# The Vercel deployment only serves the demo (demo/) and the card + fonts it loads (www/).
+scripts/
+themes/
+dashboards/
+docs/

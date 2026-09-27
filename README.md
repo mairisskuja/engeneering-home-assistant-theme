@@ -13,7 +13,7 @@ python3 -m http.server 8000   # from the repository root
 # open http://localhost:8000/demo/
 ```
 
-It loads `www/engineering-console-card.js` and `www/fonts/` directly, so it always shows the current card. It also works as-is on GitHub Pages (serve the repository root).
+It loads `www/engineering-console-card.js` and `www/fonts/` directly, so it always shows the current card. It's deployed on Vercel at https://engeneering-home-assistant-theme.vercel.app/ (`vercel.json` redirects `/` to `/demo/`; `.vercelignore` limits the deployment to `demo/` and `www/`), and every push to `main` redeploys it.
 
 ## Highlights
 
