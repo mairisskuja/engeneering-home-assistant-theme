@@ -2,6 +2,8 @@
 
 An industrial control-panel theme for Home Assistant: graphite or light-grey panels, square edges, a safety-orange accent and explicit status colours. Its typography is inspired by [teenage.engineering](https://teenage.engineering/). It has dark and light modes, both checked against WCAG 2.2 AA.
 
+[![Live demo](https://img.shields.io/badge/live%20demo-open-ff7a1a?style=flat-square)](https://engeneering-home-assistant-theme.vercel.app/) **[Try the live demo →](https://engeneering-home-assistant-theme.vercel.app/)** Simulated devices, nothing connected.
+
 ![Engineering Theme lighting console in light mode: floor tabs, scenes strip, LCD status with dot matrix, temperature and humidity panel, and per-area brightness knobs](docs/images/console-light.png)
 
 ## Live demo
