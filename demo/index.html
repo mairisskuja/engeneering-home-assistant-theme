@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Engineering Console demo</title>
+<meta name="description" content="Standalone demo of the Engineering Theme lighting console for Home Assistant. Runs the real card against simulated devices; nothing is connected.">
+<link rel="stylesheet" href="../www/fonts/fonts.css">
+<style>
+  :root {
+    --bg: #e4e5e2; --ink: #16181b; --soft: #4b5157; --bar: #dcddd9; --edge: #c3c6c8;
+    --accent: #a34405; --accent-fill: #df600c;
+  }
+  :root[data-mode="dark"] {
+    --bg: #16181b; --ink: #eceff2; --soft: #a9b0b8; --bar: #121417; --edge: #33383e;
+    --accent: #ff7a1a; --accent-fill: #ff7a1a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 "Hanken Grotesk", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  }
+  header {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+    padding: 12px 16px; background: var(--bar); border-bottom: 1px solid var(--edge);
+  }
+  h1 { font: 700 20px/1.1 "Barlow Condensed", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: .03em; margin: 0; }
+  .note { font: 12px "Share Tech Mono", ui-monospace, monospace; color: var(--soft); text-transform: uppercase; letter-spacing: .06em; }
+  .spacer { flex: 1; }
+  .mode { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 4px; overflow: hidden; }
+  .mode button {
+    font: 600 14px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .04em;
+    padding: 7px 12px; border: 0; background: transparent; color: var(--ink); cursor: pointer;
+  }
+  .mode button[aria-pressed="true"] { background: var(--accent-fill); color: #16181b; }
+  .mode button:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  a { color: var(--accent); }
+  main { max-width: 1400px; margin: 0 auto; }
+  #toast {
+    position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
+    background: #1c1b19; color: #e0a070; font: 13px "Share Tech Mono", ui-monospace, monospace;
+    padding: 10px 14px; border-radius: 6px; opacity: 0; transition: opacity .2s; pointer-events: none;
+  }
+  #toast.show { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Engineering Console</h1>
+  <span class="note">Live demo · simulated devices · nothing is connected</span>
+  <span class="spacer"></span>
+  <div class="mode" role="group" aria-label="Colour mode">
+    <button type="button" data-mode="light" aria-pressed="true">Light</button>
+    <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
+  </div>
+  <a href="https://github.com/mairisskuja/engeneering-home-assistant-theme">GitHub</a>
+</header>
+<main>
+  <engineering-console-card id="card"></engineering-console-card>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script type="module" src="../www/engineering-console-card.js"></script>
+<script type="module" src="demo.js"></script>
+</body>
+</html>

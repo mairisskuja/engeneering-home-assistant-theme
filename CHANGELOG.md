@@ -2,6 +2,10 @@
 
 All notable changes to Engineering Theme and its console card. Newest first.
 
+## 0.4.1 (2026-09-27)
+
+- **Standalone demo** in `demo/`: runs the real console card on simulated floors, areas, lights and sensors (temperature, humidity, CO₂), with light/dark switching and live-feeling sensor drift. No Home Assistant needed; generic example data only.
+
 ## 0.4.0 (2026-09-27)
 
 - **Mobile layout fixed.** On phones the console was wider than the screen, so tabs, scenes, the LCD and toggles were cut off on the right. The card now adapts to its own width (container queries instead of screen-size media queries), and nothing can force it wider than the screen.

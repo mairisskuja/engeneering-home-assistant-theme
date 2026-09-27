@@ -4,6 +4,17 @@ An industrial control-panel theme for Home Assistant: graphite or light-grey pan
 
 ![Engineering Theme lighting console in light mode: floor tabs, scenes strip, LCD status with dot matrix, temperature and humidity panel, and per-area brightness knobs](docs/images/console-light.png)
 
+## Live demo
+
+`demo/` runs the real console card against simulated devices; there's no Home Assistant and nothing is connected. Knobs, toggles, scenes, floor tabs and the light/dark switch all respond.
+
+```bash
+python3 -m http.server 8000   # from the repository root
+# open http://localhost:8000/demo/
+```
+
+It loads `www/engineering-console-card.js` and `www/fonts/` directly, so it always shows the current card. It also works as-is on GitHub Pages (serve the repository root).
+
 ## Highlights
 
 - **Control-panel look**: flat panels with 1px edges and 2–4px corners, no drop shadows, and a graphite neutral scale shared by menus, dialogs and switches.
@@ -168,6 +179,7 @@ scripts/contrast_check.py       WCAG gate for both modes (no dependencies)
 scripts/deploy.sh               SSH deploy: check, back up, copy, reload, verify
 scripts/verify_theme.py         Runs on the HA host; confirms both modes loaded
 docs/HANDOVER.md                Project state, decisions and open items
+demo/                           Standalone demo (index.html + simulated hass in demo.js)
 CHANGELOG.md                    History, including inherited Iconic entries
 NOTICE                          Upstream MIT notices
 hacs.json                       HACS metadata
